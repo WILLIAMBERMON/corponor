@@ -15,7 +15,15 @@ Proyecto base para PHP 8.1 + CodeIgniter 3.1.13 + MySQL + AdminLTE 4 + Bootstrap
 
 ## Instalación
 1. Requiere PHP 8.1, Composer, MySQL/MariaDB y extensiones mysqli, mbstring, openssl, fileinfo.
-2. Ejecute `composer install` en la raíz. Esto instala CodeIgniter 3.1.13 en `vendor/`.
+2. Ejecute `composer install --no-dev --optimize-autoloader` en la raíz. Esto instala CodeIgniter 3.1.13 en `vendor/`.
+
+En producción, `vendor/` no se versiona. Después de cada despliegue por Git, ejecute Composer desde la carpeta del proyecto:
+
+```bash
+composer install --no-dev --optimize-autoloader
+```
+
+Si el servidor usa varias versiones de PHP, confirme que Composer se ejecute con PHP 8.1.
 3. Importe `database/corponor_resoluciones.sql`.
 4. Configure variables de entorno del servidor o ajuste `application/config/database.php`:
    - DB_HOST, DB_USER, DB_PASS, DB_NAME

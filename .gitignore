@@ -1,0 +1,8 @@
+/vendor/
+
+# Environment-specific and generated files
+/.env
+/uploads/resoluciones/*
+/uploads/imagenes/*
+!/uploads/resoluciones/.gitkeep
+!/uploads/imagenes/.gitkeep
