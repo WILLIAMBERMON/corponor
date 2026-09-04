@@ -1,0 +1,281 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Source+Sans+3:wght@400;500;600;700&display=swap');
+
+:root {
+    --corp-blue: #2868a9;
+    --corp-blue-deep: #123e69;
+    --corp-green: #a8c63d;
+    --corp-green-deep: #789521;
+    --corp-sky: #78c9ed;
+    --corp-ink: #132b3c;
+    --corp-muted: #607381;
+    --corp-paper: #f4f7f8;
+    --corp-line: #dce6ea;
+    --corp-white: #fff;
+    --bs-body-font-family: 'Source Sans 3', sans-serif;
+    --bs-body-color: var(--corp-ink);
+}
+
+* { box-sizing: border-box; }
+body { min-height: 100vh; font-family: 'Source Sans 3', sans-serif; color: var(--corp-ink); background: var(--corp-paper); }
+h1, h2, h3, h4, h5, .brand-text, .navbar-text { font-family: 'Montserrat', sans-serif; }
+a { color: var(--corp-blue); }
+.bg-corponor-dark { background: var(--corp-ink) !important; }
+.bg-corponor-blue { background: var(--corp-blue) !important; }
+.text-corponor-blue { color: var(--corp-blue) !important; }
+.text-corponor-green { color: var(--corp-green-deep) !important; }
+.text-corponor-light { color: var(--corp-sky) !important; }
+
+.brand-mark {
+    position: relative;
+    display: inline-flex;
+    width: 42px;
+    height: 42px;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    overflow: hidden;
+    border: 4px solid var(--corp-white);
+    border-radius: 50% 50% 50% 12%;
+    color: var(--corp-white);
+    background: linear-gradient(145deg, var(--corp-sky) 0 42%, var(--corp-green) 43% 68%, var(--corp-blue) 69%);
+    box-shadow: 0 0 0 2px rgba(255,255,255,.18), 0 6px 14px rgba(8,34,56,.2);
+    font: 800 21px/1 'Montserrat', sans-serif;
+    transform: rotate(-12deg);
+}
+.brand-mark::after { content: ''; position: absolute; width: 17px; height: 4px; right: 4px; bottom: 8px; border-radius: 99px; background: var(--corp-white); transform: rotate(-35deg); opacity: .9; }
+.brand-mark-lg { width: 76px; height: 76px; font-size: 38px; border-width: 6px; }
+.brand-logo { display: block; width: 154px; height: auto; max-height: 54px; object-fit: contain; object-position: left center; }
+.brand-logo-main { display: block; width: min(270px, 100%); height: auto; max-height: 92px; margin: 0 auto 1rem; object-fit: contain; }
+.brand-logo-sidebar { width: 118px; max-height: 42px; }
+.brand-link, .corponor-logo { display: inline-flex; align-items: center; gap: 13px; }
+.corponor-logo { color: var(--corp-white); }
+.corponor-logo:hover { color: var(--corp-white); }
+.corponor-logo strong { display: block; font: 800 1.1rem/1.1 'Montserrat', sans-serif; letter-spacing: .08em; }
+.corponor-logo small { display: block; margin-top: 4px; color: rgba(255,255,255,.78); font-size: .75rem; letter-spacing: .02em; }
+
+.btn-corponor { --bs-btn-color: #fff; --bs-btn-bg: var(--corp-blue); --bs-btn-border-color: var(--corp-blue); --bs-btn-hover-color: #fff; --bs-btn-hover-bg: var(--corp-blue-deep); --bs-btn-hover-border-color: var(--corp-blue-deep); --bs-btn-active-bg: var(--corp-blue-deep); }
+.btn { border-radius: 7px; font-weight: 600; }
+.form-control, .form-select { border-color: var(--corp-line); border-radius: 7px; padding: .7rem .85rem; }
+.form-control:focus, .form-select:focus { border-color: var(--corp-sky); box-shadow: 0 0 0 .2rem rgba(120,201,237,.25); }
+
+.public-body { display: flex; flex-direction: column; min-height: 100vh; background: radial-gradient(circle at 90% 0, rgba(120,201,237,.2), transparent 28rem), var(--corp-paper); }
+.public-header { position: relative; overflow: hidden; color: var(--corp-white); background: linear-gradient(115deg, var(--corp-ink), var(--corp-blue-deep) 58%, var(--corp-blue)); border-bottom: 5px solid var(--corp-green); }
+.public-header::after { content: ''; position: absolute; width: 28rem; height: 12rem; right: -8rem; bottom: -8rem; border: 2rem solid rgba(168,198,61,.18); border-radius: 50%; transform: rotate(-18deg); }
+.public-header .container { position: relative; z-index: 1; }
+.public-header .btn { border-width: 2px; }
+.public-body > main { flex: 1 0 auto; width: 100%; }
+.hero-resolutions { position: relative; padding: 3.2rem 0 2.5rem; }
+.hero-resolutions::before { content: 'CORPONOR'; position: absolute; top: 1.4rem; right: 0; color: rgba(40,104,169,.08); font: 800 clamp(3rem, 10vw, 8rem)/1 'Montserrat', sans-serif; letter-spacing: -.06em; }
+.hero-resolutions .eyebrow { position: relative; color: var(--corp-green-deep); font: 700 .76rem/1 'Montserrat', sans-serif; letter-spacing: .16em; text-transform: uppercase; }
+.hero-resolutions h1 { position: relative; max-width: 720px; margin: .85rem 0 .65rem; color: var(--corp-ink); font-size: clamp(2rem, 5vw, 3.7rem); font-weight: 800; letter-spacing: -.04em; }
+.hero-resolutions p { position: relative; max-width: 590px; margin: 0; color: var(--corp-muted); font-size: 1.12rem; }
+.filter-box { position: relative; padding: 1.35rem; border: 1px solid rgba(40,104,169,.12); border-top: 4px solid var(--corp-green); border-radius: 12px; background: var(--corp-white); box-shadow: 0 14px 34px rgba(19,43,60,.08); }
+.filter-box .form-label { color: var(--corp-muted); font-size: .85rem; font-weight: 600; }
+.group-heading { display: flex; align-items: baseline; gap: 1rem; margin-top: 2.3rem !important; padding: .2rem 0 .2rem 1rem; border-left: 5px solid var(--corp-green); }
+.group-heading span { color: var(--corp-blue); font: 700 .75rem/1 'Montserrat', sans-serif; letter-spacing: .08em; }
+.group-heading h2 { margin: 0; color: var(--corp-ink); font-size: 1.25rem; }
+.resolution-card { margin: 1rem 0; overflow: hidden; border: 1px solid var(--corp-line); border-radius: 11px; background: var(--corp-white); box-shadow: 0 8px 22px rgba(19,43,60,.06); transition: transform .2s ease, box-shadow .2s ease; }
+.resolution-grid .resolution-card { margin: 0; }
+.resolution-grid { row-gap: 1.25rem !important; margin-bottom: 1.25rem; }
+.group-preview .group-heading { position: relative; z-index: 1; margin-bottom: 1.25rem !important; }
+.group-heading + .resolution-grid { margin-top: 1.25rem; }
+.resolution-card:hover { transform: translateY(-2px); box-shadow: 0 14px 28px rgba(19,43,60,.1); }
+.resolution-card h3 { margin-bottom: 1.1rem; color: var(--corp-ink); font: 700 1.12rem/1.35 'Montserrat', sans-serif; }
+.resolution-date { margin-bottom: .6rem; color: var(--corp-muted); font-size: .9rem; }
+.resolution-date i { color: var(--corp-green-deep); }
+.resolution-image { width: 100%; height: 100%; min-height: 170px; object-fit: cover; }
+.public-footer { flex-shrink: 0; margin-top: 4rem; color: rgba(255,255,255,.75); background: var(--corp-ink); border-top: 5px solid var(--corp-green); }
+
+.login-page-corponor { position: relative; display: grid; min-height: 100vh; place-items: center; overflow: hidden; padding: 2rem 1rem; background: linear-gradient(135deg, var(--corp-ink), var(--corp-blue-deep) 55%, var(--corp-blue)); }
+.login-page-corponor::before, .login-page-corponor::after { content: ''; position: absolute; border: 2rem solid rgba(120,201,237,.12); border-radius: 50%; }
+.login-page-corponor::before { width: 34rem; height: 34rem; top: -19rem; right: -8rem; }
+.login-page-corponor::after { width: 28rem; height: 28rem; bottom: -18rem; left: -10rem; border-color: rgba(168,198,61,.14); }
+.login-card { position: relative; z-index: 1; width: min(440px, 100%); padding: 2.4rem; border-top: 6px solid var(--corp-green); border-radius: 14px; background: rgba(255,255,255,.98); box-shadow: 0 24px 70px rgba(0,0,0,.28); }
+.login-card h1 { color: var(--corp-ink); font-weight: 800; letter-spacing: .03em; }
+.login-card h2 { color: var(--corp-ink); font-weight: 700; }
+.login-card .text-muted { color: var(--corp-muted) !important; }
+
+.app-wrapper { min-height: 100vh; }
+.app-header { border-bottom: 1px solid var(--corp-line); }
+.app-header .navbar-text { color: var(--corp-ink); }
+.app-sidebar { background: linear-gradient(180deg, var(--corp-ink), #1c4e72) !important; }
+.sidebar-brand { border-bottom: 1px solid rgba(255,255,255,.12); }
+.sidebar-brand .brand-link { padding: 1rem 1.15rem; color: var(--corp-white); }
+.sidebar-brand .brand-text { font-weight: 700 !important; letter-spacing: .07em; }
+.sidebar-menu .nav-link { margin: .15rem .65rem; border-radius: 7px; color: rgba(255,255,255,.72); }
+.sidebar-menu .nav-link:hover, .sidebar-menu .nav-link:focus { color: var(--corp-white); background: rgba(120,201,237,.15); }
+.sidebar-menu .nav-icon { color: var(--corp-sky); }
+.app-main { background: var(--corp-paper); }
+.app-content-header { padding: 1.5rem 0 .8rem; }
+.app-content-header h3 { color: var(--corp-ink); font-weight: 800; }
+.card, .card-corponor { border: 1px solid var(--corp-line); border-top: 4px solid var(--corp-green); border-radius: 10px; box-shadow: 0 8px 22px rgba(19,43,60,.06); }
+.card-corponor { border-top-color: var(--corp-green); }
+.table { --bs-table-bg: transparent; }
+.table thead th { color: var(--corp-muted); font: 700 .76rem 'Montserrat', sans-serif; letter-spacing: .04em; text-transform: uppercase; }
+.badge.bg-corponor-blue { background: var(--corp-blue) !important; }
+.app-footer { flex-shrink: 0; color: var(--corp-muted); border-top: 3px solid var(--corp-green); }
+.preview-mini { max-width: 150px; max-height: 100px; }
+
+@media (max-width: 575.98px) {
+    .public-header .container { align-items: flex-start !important; flex-direction: column; gap: 1rem; }
+    .hero-resolutions { padding-top: 2rem; }
+    .hero-resolutions::before { top: 1rem; font-size: 3.6rem; }
+    .login-card { padding: 1.6rem; }
+    .brand-logo { width: 132px; }
+    .brand-logo-sidebar { width: 108px; }
+    .group-heading { display: block; }
+    .group-heading h2 { margin-top: .4rem; }
+}
+
+/* Public page: institutional WordPress-like header and footer. */
+.public-header { overflow: visible; color: var(--corp-ink); background: var(--corp-white); border-bottom: 0; }
+.public-header::after { display: none; }
+.public-topbar { padding: .48rem 0; color: rgba(255,255,255,.88); background: var(--corp-ink); font-size: .82rem; }
+.public-nav { border-bottom: 4px solid var(--corp-green); background: var(--corp-white); box-shadow: 0 3px 14px rgba(19,43,60,.08); }
+.public-nav .container { min-height: 86px; }
+.public-nav .corponor-logo { color: var(--corp-ink); }
+.public-nav .brand-logo { width: 184px; max-height: 62px; }
+.public-nav-links { margin-left: auto; }
+.public-nav-link { display: inline-flex; align-items: center; min-height: 44px; padding: .55rem .75rem; border-bottom: 3px solid transparent; color: var(--corp-ink); font: 600 .82rem 'Montserrat', sans-serif; text-decoration: none; transition: color .2s ease, border-color .2s ease; }
+.public-nav-link:hover, .public-nav-link.active { color: var(--corp-blue); border-bottom-color: var(--corp-green); }
+.public-nav-action { margin-left: .45rem; border-radius: 5px; color: var(--corp-white); background: var(--corp-blue); }
+.public-nav-action:hover { color: var(--corp-white); border-bottom-color: transparent; background: var(--corp-blue-deep); }
+.public-nav-toggle { display: none; padding: .3rem .65rem; border: 1px solid var(--corp-line); border-radius: 5px; color: var(--corp-blue); background: var(--corp-white); font-size: 1.45rem; }
+.public-footer { color: rgba(255,255,255,.78); background: var(--corp-ink); border-top: 5px solid var(--corp-green); }
+.public-footer-logo { width: 175px; max-height: 62px; }
+.public-footer p { max-width: 260px; line-height: 1.55; }
+.public-footer h2 { margin: 0 0 .85rem; color: var(--corp-white); font-size: .78rem; letter-spacing: .1em; text-transform: uppercase; }
+.public-footer a { display: block; margin: .38rem 0; color: var(--corp-sky); text-decoration: none; }
+.public-footer a:hover { color: var(--corp-green); }
+.public-footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 3rem; }
+.public-footer-bottom { display: flex; justify-content: space-between; gap: 1rem; margin-top: 2.5rem; padding-top: 1.2rem; border-top: 1px solid rgba(255,255,255,.16); }
+.public-footer-bottom a { display: inline; }
+
+@media (max-width: 767.98px) {
+    .public-nav .container { min-height: 72px; }
+    .public-nav .brand-logo { width: 150px; }
+    .public-nav-toggle { display: block; margin-left: auto; }
+    .public-nav-links { width: 100%; padding: .65rem 0 1rem; }
+    .public-nav-links.show { display: flex !important; flex-direction: column; align-items: stretch !important; }
+    .public-nav-link { border-bottom: 1px solid var(--corp-line); }
+    .public-nav-action { margin: .5rem 0 0; justify-content: center; }
+    .public-footer-grid { grid-template-columns: 1fr; gap: 1.6rem; }
+    .public-footer-bottom { align-items: flex-start; flex-direction: column; }
+}
+
+/* Match the original public footer composition. */
+.public-wp-footer { background: var(--corp-white) url('../images/footer-bg.jpg') center bottom / 100% auto no-repeat; }
+.public-wp-find { padding: 2.7rem 0 2.2rem; background: transparent; }
+.public-wp-find .container { max-width: 1760px; }
+.public-wp-maps { gap: .5rem; }
+.public-wp-maps iframe { width: 80%; height: 360px; justify-self: center; }
+.public-wp-contact { color: #111; background: transparent; }
+.public-wp-address { max-width: 900px; }
+.public-wp-contact a { color: #2868a9; }
+.public-wp-contact a:hover { color: #123e69; }
+.public-wp-footer-brands { justify-content: flex-start; max-width: 1760px; margin: 0 auto 1.1rem; }
+.public-wp-footer-links a { border-color: #2868a9; color: #2868a9; background: rgba(255,255,255,.65); }
+.public-wp-footer-links a:hover { color: #fff; background: #2868a9; }
+.public-wp-credits { border-top: 0; color: #111; }
+
+/* Use a real gap between public resolution cards instead of Bootstrap column padding. */
+.resolution-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.5rem;
+    margin-left: 0;
+    margin-right: 0;
+}
+.resolution-grid > .resolution-card {
+    width: auto;
+    padding-left: 0;
+    padding-right: 0;
+}
+@media (max-width: 767.98px) {
+    .resolution-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 575.98px) {
+    .resolution-grid { grid-template-columns: 1fr; }
+}
+
+.year-tabs { display: flex; flex-wrap: wrap; gap: .55rem; }
+.year-tab { padding: .55rem 1rem; border: 1px solid var(--corp-blue); border-radius: 999px; color: var(--corp-blue); font-weight: 700; text-decoration: none; }
+.year-tab:hover, .year-tab.active { color: var(--corp-white); background: var(--corp-blue); }
+.group-more { clear: both; margin: 1rem 0 2rem; text-align: right; }
+.results-heading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin: 1rem 0; }
+.results-heading h2 { margin: 0; color: var(--corp-ink); font-size: 1.35rem; }
+.results-heading a { color: var(--corp-blue); font-weight: 600; text-decoration: none; }
+.public-main { padding-left: 3vw !important; padding-right: 3vw !important; }
+.group-preview { max-width: none; margin: 0 auto; }
+.public-pagination { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin: 2rem 0 1rem; color: var(--corp-muted); font-size: .9rem; }
+.public-pagination div { display: flex; flex-wrap: wrap; gap: .35rem; }
+.public-pagination a { display: inline-flex; min-width: 2.25rem; height: 2.25rem; align-items: center; justify-content: center; border: 1px solid var(--corp-line); border-radius: 6px; color: var(--corp-blue); text-decoration: none; }
+.public-pagination a:hover, .public-pagination a.active { color: var(--corp-white); background: var(--corp-blue); border-color: var(--corp-blue); }
+
+@media (max-width: 767.98px) {
+    .public-wp-maps iframe { width: 100%; height: 260px; }
+    .public-wp-footer-brands { padding: 0 1rem; }
+}
+
+/* Public WordPress-inspired shell based on the supplied institutional markup. */
+.public-wp-header { flex-shrink: 0; background: var(--corp-white); }
+.public-wp-upper { min-height: 95px; background: var(--corp-white); }
+.public-wp-upper-inner { display: flex; min-height: 95px; align-items: center; justify-content: space-between; gap: 1.5rem; }
+.public-wp-logos { display: flex; align-items: center; gap: 1.25rem; }
+.public-wp-logos img { display: block; width: auto; max-width: 130px; height: 45px; object-fit: contain; }
+.public-wp-logos .public-wp-main-logo { width: 190px; height: 68px; max-width: 190px; }
+.public-wp-logos .public-wp-pse { width: 116px; height: 45px; border-radius: 3px; }
+.public-wp-tools { display: flex; align-items: center; gap: .85rem; }
+.public-wp-tools a { color: var(--corp-green-deep); font-size: 1.05rem; }
+.public-wp-tools a:hover { color: var(--corp-blue); }
+.public-wp-menu { min-height: 76px; background: linear-gradient(105deg, #2f3192 0%, #2f3192 8%, #499bea 100%); }
+.public-wp-navigation { gap: .2rem; }
+.public-wp-navigation .nav-link { display: flex; min-height: 76px; align-items: center; padding: 0 .75rem; border-bottom: 3px solid transparent; color: var(--corp-white); font: 600 .76rem 'Montserrat', sans-serif; text-align: center; }
+.public-wp-navigation .nav-link:hover, .public-wp-navigation .nav-link.active { color: var(--corp-white); border-bottom-color: var(--corp-green); background: rgba(255,255,255,.08); }
+.public-wp-navigation .public-wp-admin-link { margin-left: .35rem; color: #17314d; background: var(--corp-green); }
+.public-wp-navigation .public-wp-admin-link:hover { color: #17314d; background: #bedb52; }
+.public-wp-footer { flex-shrink: 0; color: #25313a; background: var(--corp-white); }
+.public-wp-find { padding: 2.7rem 0 2.5rem; background: var(--corp-white) url('../images/footer-bg.jpg') center bottom / cover no-repeat; }
+.public-wp-find h2 { margin: 0 0 1.8rem; color: #222; font-size: clamp(2rem, 4vw, 3.1rem); font-weight: 800; text-align: center; text-transform: uppercase; }
+.public-wp-maps { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.7rem; }
+.public-wp-maps iframe { width: 100%; height: 260px; border: 0; box-shadow: 5px 5px 10px rgba(0,0,0,.22); }
+.public-wp-contact { padding: 1.7rem 0 1.4rem; color: rgba(255,255,255,.88); text-align: center; background: #222; }
+.public-wp-footer-brands { display: flex; align-items: center; justify-content: center; gap: 1.4rem; margin-bottom: 1.2rem; }
+.public-wp-footer-brands img { width: auto; height: 42px; max-width: 130px; object-fit: contain; }
+.public-wp-footer-brands .public-wp-pse { width: 116px; border-radius: 3px; }
+.public-wp-address { margin: 0 auto 1.25rem; line-height: 1.6; }
+.public-wp-contact a { color: #9cdaef; text-decoration: none; }
+.public-wp-contact a:hover { color: var(--corp-green); }
+.public-wp-footer-links { display: flex; flex-wrap: wrap; justify-content: center; gap: .65rem; margin-bottom: 1.3rem; }
+.public-wp-footer-links a { display: inline-block; padding: .5rem .9rem; border: 1px solid rgba(168,198,61,.65); color: var(--corp-white); font: 600 .72rem 'Montserrat', sans-serif; text-transform: uppercase; }
+.public-wp-footer-links a:hover { color: #222; background: var(--corp-green); }
+.public-wp-credits { padding-top: 1.1rem; border-top: 1px solid rgba(255,255,255,.2); font-size: .85rem; }
+
+@media (max-width: 991.98px) {
+    .public-wp-navigation .nav-link { min-height: 48px; justify-content: flex-start; text-align: left; }
+    .public-wp-navigation .public-wp-admin-link { margin: .4rem 0 .7rem; }
+}
+@media (max-width: 767.98px) {
+    .public-wp-upper-inner { min-height: 78px; }
+    .public-wp-upper { min-height: 78px; }
+    .public-wp-logos { gap: .55rem; }
+    .public-wp-logos img { max-width: 70px; height: 32px; }
+    .public-wp-logos .public-wp-main-logo { width: 145px; height: 55px; max-width: 145px; }
+    .public-wp-logos .public-wp-pse { width: 76px; height: 32px; }
+    .public-wp-tools { display: none; }
+    .public-wp-maps { grid-template-columns: 1fr; }
+    .public-wp-maps iframe { height: 220px; }
+}
+
+/* Final public footer overrides. Keep these after the base shell rules. */
+.public-wp-footer {
+    background: var(--corp-white) url('../images/footer-bg.jpg') center bottom / 100% auto no-repeat;
+}
+.public-wp-find { background: transparent; }
+.public-wp-contact { color: #111; background: transparent; }
+.public-wp-contact a { color: #2868a9; }
+.public-wp-contact a:hover { color: #123e69; }
+.public-wp-footer-brands { justify-content: flex-start; max-width: 1760px; margin: 0 auto 1.1rem; }
+.public-wp-footer-links a { border-color: #2868a9; color: #2868a9; background: rgba(255,255,255,.65); }
+.public-wp-footer-links a:hover { color: #fff; background: #2868a9; }
+.public-wp-credits { border-top: 0; color: #111; }

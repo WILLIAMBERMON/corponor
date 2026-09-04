@@ -1,0 +1,12 @@
+<?php defined('BASEPATH') OR exit('No direct script access allowed');
+$route['default_controller']='resoluciones';
+$route['404_override']=''; $route['translate_uri_dashes']=FALSE;
+$route['login']='auth/login'; $route['logout']='auth/logout';
+$route['recuperar-clave']='auth/forgot'; $route['restablecer-clave/(:any)']='auth/reset/$1';
+$route['resoluciones']='resoluciones/index';
+$route['admin']='admin/dashboard';
+$route['admin/usuarios']='admin/usuarios'; $route['admin/usuarios/crear']='admin/usuario_crear';
+$route['admin/grupos']='admin/grupos'; $route['admin/grupos/crear']='admin/grupo_crear';
+$route['admin/resoluciones']='admin/resoluciones'; $route['admin/resoluciones/crear']='admin/resolucion_crear';
+$route['admin/resoluciones/editar/(:num)']='admin/resolucion_editar/$1';
+$route['admin/enlaces']='admin/enlaces';
