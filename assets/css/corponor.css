@@ -198,6 +198,8 @@ a { color: var(--corp-blue); }
     .resolution-grid { grid-template-columns: 1fr; }
 }
 
+.download-count { float: right; color: var(--corp-blue); font-size: .82rem; }
+
 .year-tabs { display: flex; flex-wrap: wrap; gap: .55rem; }
 .year-tab { padding: .55rem 1rem; border: 1px solid var(--corp-blue); border-radius: 999px; color: var(--corp-blue); font-weight: 700; text-decoration: none; }
 .year-tab:hover, .year-tab.active { color: var(--corp-white); background: var(--corp-blue); }

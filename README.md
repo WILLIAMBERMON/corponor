@@ -25,6 +25,7 @@ composer install --no-dev --optimize-autoloader
 
 Si el servidor usa varias versiones de PHP, confirme que Composer se ejecute con PHP 8.1.
 3. Importe `database/corponor_resoluciones.sql`.
+4. Para una base existente, ejecute `database/migracion_estadisticas_permisos.sql`. Crea los eventos de visitas/descargas y la asignación de usuarios a grupos sin eliminar datos.
 4. Configure variables de entorno del servidor o ajuste `application/config/database.php`:
    - DB_HOST, DB_USER, DB_PASS, DB_NAME
    - APP_URL y APP_KEY

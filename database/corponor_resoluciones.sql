@@ -53,5 +53,26 @@ CREATE TABLE password_reset_tokens (
  INDEX idx_token_expira (expira_en)
 ) ENGINE=InnoDB;
 
+CREATE TABLE usuario_grupo (
+ usuario_id BIGINT UNSIGNED NOT NULL,
+ grupo_id BIGINT UNSIGNED NOT NULL,
+ PRIMARY KEY (usuario_id, grupo_id),
+ CONSTRAINT fk_ug_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+ CONSTRAINT fk_ug_grupo FOREIGN KEY (grupo_id) REFERENCES grupos_resoluciones(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+CREATE TABLE estadisticas_eventos (
+ id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+ tipo VARCHAR(20) NOT NULL,
+ resolucion_id BIGINT UNSIGNED NULL,
+ grupo_id BIGINT UNSIGNED NULL,
+ ip VARCHAR(45) NULL,
+ user_agent VARCHAR(500) NULL,
+ creado_en DATETIME NOT NULL,
+ CONSTRAINT fk_evento_resolucion FOREIGN KEY (resolucion_id) REFERENCES resoluciones(id) ON DELETE SET NULL,
+ CONSTRAINT fk_evento_grupo FOREIGN KEY (grupo_id) REFERENCES grupos_resoluciones(id) ON DELETE SET NULL,
+ INDEX idx_evento_tipo_fecha (tipo, creado_en), INDEX idx_evento_resolucion (resolucion_id), INDEX idx_evento_grupo (grupo_id)
+) ENGINE=InnoDB;
+
 INSERT INTO usuarios (nombres,documento,clave,email,es_admin,activo,creado_en)
 VALUES ('Administrador CORPONOR','1000000000','$2y$12$uO8AJxnU2WXf/nmXrtns0eGeGi8L3jY.Dya0nlvZTUP1G3zQojwWi','admin@corponor.gov.co',1,1,NOW());
