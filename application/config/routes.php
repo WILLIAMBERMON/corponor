@@ -13,3 +13,9 @@ $route['admin/resoluciones']='admin/resoluciones'; $route['admin/resoluciones/cr
 $route['admin/resoluciones/editar/(:num)']='admin/resolucion_editar/$1';
 $route['admin/enlaces']='admin/enlaces';
 $route['admin/estadisticas']='estadisticas/index'; $route['admin/estadisticas/exportar']='estadisticas/exportar';
+
+$route['admin/usuarios/editar/(:num)']='admin/usuario_editar/$1';
+$route['admin/usuarios/clave/(:num)']='admin/usuario_clave/$1';
+$route['admin/resoluciones/eliminar/(:num)']='admin/resolucion_eliminar/$1';
+$route['admin/grupos/eliminar/(:num)']='admin/grupo_eliminar/$1';
+$route['resoluciones/archivo/(:num)']='resoluciones/archivo/$1';

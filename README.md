@@ -46,3 +46,21 @@ Se aplican los colores corporativos publicados por CORPONOR: #3A66AC, #AECA49, #
 
 ## Dependencias front-end
 Bootstrap 5.3.8, Bootstrap Icons y AdminLTE 4 rc7 se cargan por CDN. Si el entorno no tiene salida a Internet, descargue esos activos a `assets/vendor/` y cambie las referencias de los layouts.
+
+## Actualizacion de usuarios y permisos
+
+Antes de desplegar estos cambios sobre una base existente, ejecutar una sola vez
+`database/migracion_roles_usuarios.sql`. Los esquemas de instalacion nueva ya incluyen
+el rol inicial. `es_admin` utiliza 0 para usuario, 1 para administrador y 2 para
+superadministrador. La migracion conserva como superadministrador la cuenta inicial.
+Los permisos se actualizan desde la base de datos en cada solicitud autenticada.
+
+En Usuarios se pueden editar nombres, documento alfanumerico, correo y rol.
+Solo el superadministrador puede conceder el rol de superadministrador; nadie puede
+cambiar su propio rol. Administradores pueden restablecer cualquier clave y los
+usuarios regulares disponen de Mi clave para restablecer solo la propia.
+
+Eliminar resoluciones y grupos requiere acceso al grupo (o ser superadministrador).
+Solo se eliminan grupos sin resoluciones, incluidas las inactivas. Los archivos
+fisicos se conservan al eliminar una resolucion; el registro deja de publicarse.
+La descarga directa se ofrece para archivos PDF cargados, no para URLs externas.

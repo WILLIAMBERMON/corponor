@@ -76,3 +76,6 @@ CREATE TABLE estadisticas_eventos (
 
 INSERT INTO usuarios (nombres,documento,clave,email,es_admin,activo,creado_en)
 VALUES ('Administrador CORPONOR','1000000000','$2y$12$uO8AJxnU2WXf/nmXrtns0eGeGi8L3jY.Dya0nlvZTUP1G3zQojwWi','admin@corponor.gov.co',1,1,NOW());
+
+-- Roles: 0 usuario, 1 administrador, 2 superadministrador.
+UPDATE usuarios SET es_admin=2 WHERE documento='1000000000';

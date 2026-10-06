@@ -20,7 +20,7 @@
             <span class="navbar-text ms-2 fw-semibold">Gestion de Resoluciones</span>
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item"><span class="nav-link"><?= html_escape($this->session->userdata('nombres')) ?></span></li>
-                <li><a class="nav-link" href="<?= site_url('logout') ?>"><i class="bi bi-box-arrow-right"></i> Salir</a></li>
+                <li><a class="nav-link" href="<?= site_url('admin/usuarios/clave/'.(int)$this->session->userdata('usuario_id')) ?>">Mi clave</a></li><li><a class="nav-link" href="<?= site_url('logout') ?>"><i class="bi bi-box-arrow-right"></i> Salir</a></li>
             </ul>
         </div>
     </nav>
@@ -32,10 +32,10 @@
         </div>
         <div class="sidebar-wrapper"><nav class="mt-2"><ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" role="menu">
             <li class="nav-item"><a href="<?= site_url('admin') ?>" class="nav-link"><i class="nav-icon bi bi-speedometer2"></i><p>Panel</p></a></li>
-            <?php if((string)$this->session->userdata('documento')==='1000000000'): ?><li class="nav-item"><a href="<?= site_url('admin/usuarios') ?>" class="nav-link"><i class="nav-icon bi bi-people"></i><p>Usuarios</p></a></li><?php endif; ?>
+            <?php if((int)$this->session->userdata('es_admin')>=1): ?><li class="nav-item"><a href="<?= site_url('admin/usuarios') ?>" class="nav-link"><i class="nav-icon bi bi-people"></i><p>Usuarios</p></a></li><?php endif; ?>
             <li class="nav-item"><a href="<?= site_url('admin/grupos') ?>" class="nav-link"><i class="nav-icon bi bi-folder2-open"></i><p>Grupos</p></a></li>
             <li class="nav-item"><a href="<?= site_url('admin/resoluciones') ?>" class="nav-link"><i class="nav-icon bi bi-file-earmark-text"></i><p>Resoluciones</p></a></li>
-            <?php if((string)$this->session->userdata('documento')==='1000000000'): ?><li class="nav-item"><a href="<?= site_url('admin/enlaces') ?>" class="nav-link"><i class="nav-icon bi bi-link-45deg"></i><p>Novedades de enlaces</p></a></li><?php endif; ?>
+            <?php if((int)$this->session->userdata('es_admin')>=1): ?><li class="nav-item"><a href="<?= site_url('admin/enlaces') ?>" class="nav-link"><i class="nav-icon bi bi-link-45deg"></i><p>Novedades de enlaces</p></a></li><?php endif; ?>
             <li class="nav-item"><a href="<?= site_url('admin/estadisticas') ?>" class="nav-link"><i class="nav-icon bi bi-bar-chart-line"></i><p>Estadísticas</p></a></li>
             <li class="nav-item"><a href="<?= site_url('resoluciones') ?>" class="nav-link" target="_blank"><i class="nav-icon bi bi-globe"></i><p>Vista publica</p></a></li>
         </ul></nav></div>
@@ -44,7 +44,7 @@
         <div class="app-content-header"><div class="container-fluid"><h3 class="mb-0"><?= html_escape($title ?? '') ?></h3></div></div>
         <div class="app-content"><div class="container-fluid">
             <?php if($this->session->flashdata('success')): ?><div class="alert alert-success"><?= html_escape($this->session->flashdata('success')) ?></div><?php endif; ?>
-            <?php if(!empty($error)): ?><div class="alert alert-danger"><?= html_escape($error) ?></div><?php endif; ?>
+            <?php $error=$error??$this->session->flashdata('error'); if(!empty($error)): ?><div class="alert alert-danger"><?= html_escape($error) ?></div><?php endif; ?>
             <?php $this->load->view($content_view); ?>
         </div></div>
     </main>
@@ -69,5 +69,5 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 </script>
-</body>
+<script src="<?= base_url('assets/js/password-toggle.js') ?>"></script></body>
 </html>

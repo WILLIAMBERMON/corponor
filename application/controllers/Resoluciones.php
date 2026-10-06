@@ -11,4 +11,11 @@ class Resoluciones extends MY_Controller {
   $this->render('public/resoluciones',$data,'public');
  }
  public function descargar($id){ $r=$this->Resolucion_model->una((int)$id); if(!$r || !$r->activo) show_404(); $this->Estadistica_model->registrar('descarga',(int)$r->id,(int)$r->grupo_id); $destino=$r->archivo?base_url($r->archivo):$r->url; redirect($destino); }
+ public function archivo($id){
+  $r=$this->Resolucion_model->una((int)$id); if(!$r || !$r->activo || !$r->archivo) show_404();
+  $base=realpath(FCPATH.'uploads/resoluciones'); $ruta=realpath(FCPATH.$r->archivo);
+  if(!$base || !$ruta || strpos($ruta,$base.DIRECTORY_SEPARATOR)!==0 || !is_file($ruta) || !is_readable($ruta)) show_404();
+  $this->Estadistica_model->registrar('descarga',(int)$r->id,(int)$r->grupo_id);
+  $this->load->helper('download'); force_download($ruta,NULL,TRUE);
+ }
 }
