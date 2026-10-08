@@ -8,6 +8,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link rel="stylesheet" href="<?= base_url('assets/css/corponor.css?v=20260904') ?>">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css">
+    <link rel="stylesheet" href="<?= base_url('assets/css/resoluciones-select2.css?v=20261008-2') ?>">
 </head>
 <body class="public-body">
 <header class="public-wp-header">
@@ -51,5 +53,21 @@
     <section class="public-wp-contact"><div class="container"><div class="public-wp-footer-brands"><a href="https://www.gov.co" target="_blank" rel="noopener"><img src="<?= base_url('assets/images/govco.png') ?>" alt="GOV.CO"></a><img src="<?= base_url('assets/images/pais-col.png') ?>" alt="Colombia"><a href="https://corponor.gov.co/web/index.php/pagos-en-linea/" target="_blank" rel="noopener"><img class="public-wp-pse" src="<?= base_url('assets/images/pse.jpeg') ?>" alt="Pagos en linea"></a></div><p class="public-wp-address"><strong>Corporacion Autonoma Regional de la Frontera Nororiental</strong><br>Direccion: Calle 13 No. 3E - 278. Barrio Caobos - Cucuta, Norte de Santander<br>Telefono conmutador: <a href="tel:+5760748868">(+57) (60) (7) 5748868</a><br>Linea gratuita nacional: 01-8000-75200 / 01-8000-975201<br>Ventanilla Unica para Radicacion: <a href="https://siep-corponor.com/siepdocpqr9/pqr_corponor_/" target="_blank" rel="noopener">Siep-Corponor</a><br>Linea Anticorrupcion: <a href="mailto:corponorjuntosporlatransparencia@corponor.gov.co">corponorjuntosporlatransparencia@corponor.gov.co</a><br>Horario de atencion: Lunes a viernes de 7:15 a.m. a 12:00 m. y de 2:15 p.m. a 6:00 p.m.<br>Notificaciones judiciales: <a href="mailto:procesosjudiciales@corponor.gov.co">procesosjudiciales@corponor.gov.co</a> / <a href="mailto:procesosjudicialescorponor@corponor.gov.co">procesosjudicialescorponor@corponor.gov.co</a></p><div class="public-wp-footer-links"><a href="https://corponor.gov.co/web/index.php/transparencia/politicas-4/" target="_blank" rel="noopener">Politicas</a><a href="https://corponor.gov.co/web/index.php/mapa-del-sitio" target="_blank" rel="noopener">Mapa de sitio</a><a href="https://mail.corponor.gov.co:2096/" target="_blank" rel="noopener">Correo institucional</a><a href="https://siep-corponor.com/siepdoc/login.php" target="_blank" rel="noopener">SIEPDOC</a></div><div class="public-wp-credits">Desarrollado por <a href="https://labco.com.co/" target="_blank" rel="noopener">Labco Centro de Innovacion</a> · Copyright <?= date('Y') ?> · <a href="mailto:williambermon@gmail.com">Ing. William Bermon</a></div></div></section>
 </footer>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/i18n/es.js"></script>
+<script>
+if (window.jQuery && jQuery.fn.select2) {
+    jQuery('.resolution-select2').each(function () {
+        jQuery(this).select2({
+            width: '100%',
+            placeholder: jQuery(this).data('placeholder'),
+            allowClear: true,
+            closeOnSelect: false,
+            language: 'es'
+        });
+    });
+}
+</script>
 </body>
 </html>

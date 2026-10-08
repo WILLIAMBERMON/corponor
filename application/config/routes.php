@@ -19,3 +19,5 @@ $route['admin/usuarios/clave/(:num)']='admin/usuario_clave/$1';
 $route['admin/resoluciones/eliminar/(:num)']='admin/resolucion_eliminar/$1';
 $route['admin/grupos/eliminar/(:num)']='admin/grupo_eliminar/$1';
 $route['resoluciones/archivo/(:num)']='resoluciones/archivo/$1';
+
+$route['admin/enlaces/lote']='admin/enlaces_lote';

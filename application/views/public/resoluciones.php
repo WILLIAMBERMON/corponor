@@ -6,11 +6,15 @@
 <div class="filter-box mb-4">
     <?= form_open('resoluciones',array('method'=>'get')) ?>
     <div class="row g-3 align-items-end">
-        <div class="col-lg-5"><label class="form-label">Título</label><input name="titulo" class="form-control" value="<?= html_escape($f['titulo']??'') ?>" placeholder="Buscar por palabras del título"></div>
-        <div class="col-lg-3"><label class="form-label">Fecha</label><input type="date" name="fecha" class="form-control" value="<?= html_escape($f['fecha']??'') ?>"></div>
-        <div class="col-lg-3"><label class="form-label">Grupo</label><select name="grupo" class="form-select"><option value="">Todos los grupos</option><?php foreach($grupos as $g): ?><option value="<?= $g->id ?>" <?= (($f['grupo']??'')==$g->id)?'selected':'' ?>><?= html_escape($g->descripcion) ?></option><?php endforeach; ?></select></div>
-        <div class="col-lg-1 d-grid"><button class="btn btn-corponor" title="Buscar"><i class="bi bi-search"></i></button></div>
+        <div class="col-lg-6"><label class="form-label">Título</label><input name="titulo" class="form-control" value="<?= html_escape($f['titulo']??'') ?>" placeholder="Buscar por palabras del título"></div>
+        <div class="col-lg-6"><label class="form-label">Fecha</label><input type="date" name="fecha" class="form-control" value="<?= html_escape($f['fecha']??'') ?>"></div>
+        </div>
+    <div class="row g-3 align-items-start mt-0">
+        <div class="col-lg-7"><label class="form-label" for="grupos">Grupos</label><select id="grupos" data-placeholder="Todos los grupos" name="grupo[]" class="form-select resolution-select2" multiple><?php foreach($grupos as $g): ?><option value="<?= (int)$g->id ?>" <?= in_array((int)$g->id,$f['grupo'],TRUE)?'selected':'' ?>><?= html_escape($g->descripcion) ?></option><?php endforeach; ?></select></div>
+        <div class="col-lg-4"><label class="form-label" for="vigencias">Vigencias</label><select id="vigencias" data-placeholder="Todas las vigencias" name="vigencia[]" class="form-select resolution-select2" multiple><?php foreach($anios as $item): ?><option value="<?= (int)$item->anio ?>" <?= in_array((int)$item->anio,$f['vigencia'],TRUE)?'selected':'' ?>><?= (int)$item->anio ?></option><?php endforeach; ?></select></div>
+        <div class="col-lg-1 d-grid"><span class="form-label d-none d-lg-block" aria-hidden="true">&nbsp;</span><button class="btn btn-corponor resolution-search-button" title="Buscar" aria-label="Buscar resoluciones"><i class="bi bi-search"></i></button></div>
     </div>
+    <p class="text-muted mt-2 mb-0">La vigencia corresponde al año de la fecha de resolución. Sin selección se incluyen todos. Puede buscar y seleccionar varias opciones en cada filtro. <a href="<?= site_url('resoluciones') ?>">Limpiar filtros</a></p>
     <?= form_close() ?>
 </div>
 <?php if(!$detalle): ?>

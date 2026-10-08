@@ -71,9 +71,21 @@ class Admin extends MY_Controller {
  public function grupo_crear(){ if(!$this->Usuario_model->es_superadmin()) show_error('Solo el superadministrador puede crear grupos.',403); if($this->input->method()==='post'){ $this->form_validation->set_rules('descripcion','Descripción','required|max_length[255]'); if($this->form_validation->run()){ $this->Grupo_model->crear($this->input->post('descripcion',TRUE)); $this->session->set_flashdata('success','Grupo creado.'); redirect('admin/grupos'); }} $this->render('admin/grupos/form',array('title'=>'Crear grupo')); }
  public function resoluciones(){ $super=$this->Usuario_model->es_superadmin(); $grupo=(int)$this->input->get('grupo',TRUE); $this->render('admin/resoluciones/index',array('title'=>'Administrar resoluciones','resoluciones'=>$this->Resolucion_model->todas_admin(NULL,$super,$grupo),'grupos'=>$this->Grupo_model->todos($this->session->userdata('usuario_id'),$super),'grupo_seleccionado'=>$grupo)); }
  public function enlaces(){
-  $this->require_admin(); $novedades=array(); $registros=$this->Resolucion_model->enlaces_a_verificar();
-  foreach($registros as $r){ $resultado=$this->verificar_enlace($r); if($resultado['problema']) $novedades[]=array('resolucion'=>$r,'resultado'=>$resultado); }
-  $this->render('admin/enlaces',array('title'=>'Novedades de enlaces','novedades'=>$novedades,'total'=>count($registros)));
+  $this->require_admin();
+  $total=(int)$this->db->count_all_results('resoluciones');
+  $max=$this->db->select_max('id')->get('resoluciones')->row();
+  $this->render('admin/enlaces',array('title'=>'Novedades de enlaces','total'=>$total,'antes'=>(int)$max->id+1));
+ }
+ public function enlaces_lote(){
+  $this->require_admin(); $antes=$this->input->get('antes');
+  if(!is_scalar($antes) || !ctype_digit((string)$antes) || (int)$antes<1) show_error('Cursor inválido.',400);
+  $registros=$this->Resolucion_model->enlaces_a_verificar((int)$antes);
+  $datos=array('fin'=>!$registros,'antes'=>(int)$antes,'novedad'=>NULL);
+  if($registros){
+   $r=$registros[0]; $resultado=$this->verificar_enlace($r); $datos['antes']=(int)$r->id;
+   if($resultado['problema']) $datos['novedad']=array('resolucion'=>$r,'resultado'=>$resultado);
+  }
+  $this->output->set_content_type('application/json')->set_header('Cache-Control: no-store')->set_output(json_encode($datos));
  }
  private function verificar_enlace($r){
   if($r->archivo){ $ruta=FCPATH.ltrim(str_replace('/',DIRECTORY_SEPARATOR,$r->archivo),DIRECTORY_SEPARATOR); if(!is_file($ruta)) return array('problema'=>true,'tipo'=>'Archivo local','estado'=>'No encontrado','detalle'=>$r->archivo); return array('problema'=>false,'tipo'=>'Archivo local','estado'=>'OK','detalle'=>'Archivo disponible'); }
