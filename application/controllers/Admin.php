@@ -95,10 +95,21 @@ class Admin extends MY_Controller {
   if($code>=200 && $code<400) return array('problema'=>false,'tipo'=>'URL','estado'=>'HTTP '.$code,'detalle'=>'Enlace disponible'); return array('problema'=>true,'tipo'=>'URL','estado'=>$code?'HTTP '.$code:'Error de conexión','detalle'=>$error?:'El servidor no respondió correctamente.');
  }
  public function carga_config(){
-  $this->output->set_content_type('application/json')->set_header('Cache-Control: no-store')->set_output(json_encode(array(
+  $datos=array(
    'csrf_name'=>$this->security->get_csrf_token_name(),'csrf_hash'=>$this->security->get_csrf_hash(),
    'upload_max'=>$this->limite_bytes(ini_get('upload_max_filesize')),'post_max'=>$this->limite_bytes(ini_get('post_max_size'))
-  )));
+  );
+  if($this->input->get('diagnostico')==='1'){
+   $this->require_admin();
+   $datos=array('upload_max'=>$datos['upload_max'],'post_max'=>$datos['post_max'],'diagnostico'=>array(
+    'php_version'=>PHP_VERSION,'php_sapi'=>PHP_SAPI,
+    'php_ini'=>php_ini_loaded_file() ?: NULL,'ini_adicionales'=>php_ini_scanned_files() ?: NULL,
+    'raiz_aplicacion'=>FCPATH,'user_ini_nombre'=>ini_get('user_ini.filename'),
+    'user_ini_cache_segundos'=>ini_get('user_ini.cache_ttl'),
+    'user_ini_existe'=>is_file(FCPATH.'.user.ini'),'user_ini_legible'=>is_readable(FCPATH.'.user.ini')
+   ));
+  }
+  $this->output->set_content_type('application/json')->set_header('Cache-Control: no-store')->set_output(json_encode($datos));
  }
  private function limite_bytes($valor){
   $valor=trim($valor); $numero=(float)$valor;
