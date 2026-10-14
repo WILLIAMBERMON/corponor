@@ -64,3 +64,26 @@ Eliminar resoluciones y grupos requiere acceso al grupo (o ser superadministrado
 Solo se eliminan grupos sin resoluciones, incluidas las inactivas. Los archivos
 fisicos se conservan al eliminar una resolucion; el registro deja de publicarse.
 La descarga directa se ofrece para archivos PDF cargados, no para URLs externas.
+
+## Entrega pública de PDF mediante tokens
+
+Antes de desplegar esta versión en una base existente, ejecutar una sola vez
+`database/migracion_tokens_publicos.sql`. Los tokens aleatorios se generan al
+mostrar las resoluciones y no requieren modificar los registros manualmente.
+Los enlaces antiguos con ID numérico dejan de funcionar.
+
+Desplegar también `.htaccess`: bloquea el acceso HTTP directo a
+`uploads/resoluciones/`. En servidores sin estas reglas, configurar un bloqueo
+equivalente. La aplicación sigue leyendo los archivos desde PHP.
+
+El visor y las descargas entregan el PDF desde la aplicación. Los orígenes remotos
+permitidos se configuran en `application/config/documentos.php`; por defecto son
+corponor.gov.co y www.corponor.gov.co. Requiere cURL, DNS y acceso saliente a esos
+servidores. Se aceptan respuestas 200 con contenido PDF, hasta 32 MB y 20 segundos
+de transferencia. Las redirecciones se rechazan: actualizar esas URLs guardadas
+al destino definitivo después de verificar que sea un origen autorizado.
+
+No se envía la URL de origen al navegador. Esto no revoca el acceso al documento
+en el servidor externo ni elimina URLs incrustadas en el propio PDF. Los tokens
+son enlaces públicos compartibles, no un mecanismo de autorización por usuario.
+El origen debe restringirse por separado si se necesita impedir su acceso directo.

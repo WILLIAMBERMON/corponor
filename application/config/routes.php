@@ -4,7 +4,7 @@ $route['404_override']=''; $route['translate_uri_dashes']=FALSE;
 $route['login']='auth/login'; $route['logout']='auth/logout';
 $route['recuperar-clave']='auth/forgot'; $route['restablecer-clave/(:any)']='auth/reset/$1';
 $route['resoluciones']='resoluciones/index';
-$route['resoluciones/descargar/(:num)']='resoluciones/descargar/$1';
+$route['resoluciones/descargar/(:any)']='resoluciones/descargar/$1';
 $route['admin']='admin/dashboard';
 $route['admin/usuarios']='admin/usuarios'; $route['admin/usuarios/crear']='admin/usuario_crear';
 $route['admin/usuarios/grupos/(:num)']='admin/usuario_grupos/$1';
@@ -18,6 +18,8 @@ $route['admin/usuarios/editar/(:num)']='admin/usuario_editar/$1';
 $route['admin/usuarios/clave/(:num)']='admin/usuario_clave/$1';
 $route['admin/resoluciones/eliminar/(:num)']='admin/resolucion_eliminar/$1';
 $route['admin/grupos/eliminar/(:num)']='admin/grupo_eliminar/$1';
-$route['resoluciones/archivo/(:num)']='resoluciones/archivo/$1';
+$route['resoluciones/archivo/(:any)']='resoluciones/archivo/$1';
 
 $route['admin/enlaces/lote']='admin/enlaces_lote';
+
+$route['resoluciones/ver/(:any)']='resoluciones/ver/$1';

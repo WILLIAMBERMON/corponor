@@ -29,6 +29,7 @@ CREATE TABLE resoluciones (
  grupo_id BIGINT UNSIGNED NOT NULL,
  titulo VARCHAR(255) NOT NULL,
  fecha_resolucion DATE NOT NULL,
+ token_publico CHAR(64) NULL UNIQUE,
  archivo VARCHAR(500) NULL,
  url VARCHAR(1000) NULL,
  imagen VARCHAR(500) NULL,

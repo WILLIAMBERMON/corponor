@@ -1,5 +1,17 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
 class Resolucion_model extends CI_Model {
+ public function token_publico($r){
+  if(!empty($r->token_publico)) return $r->token_publico;
+  $token=bin2hex(random_bytes(32));
+  $this->db->where('id',(int)$r->id)->where('token_publico IS NULL',NULL,FALSE)->update('resoluciones',array('token_publico'=>$token));
+  $fila=$this->db->select('token_publico')->where('id',(int)$r->id)->get('resoluciones')->row();
+  if(!$fila || !$fila->token_publico) throw new RuntimeException('No fue posible generar el enlace.');
+  return $fila->token_publico;
+ }
+ public function por_token($token){
+  if(!is_string($token) || !preg_match('/\A[a-f0-9]{64}\z/',$token)) return NULL;
+  return $this->db->where(array('token_publico'=>$token,'activo'=>1))->get('resoluciones')->row();
+ }
  private $gruposTerritoriales = NULL;
  public function territoriales(){ return array('cucuta'=>'Cúcuta','tibu'=>'Tibú','ocana'=>'Ocaña','pamplona'=>'Pamplona'); }
  public function territorial_de_grupo($descripcion){
