@@ -2,6 +2,14 @@
 class MY_Controller extends CI_Controller {
     public function __construct(){ parent::__construct(); date_default_timezone_set('America/Bogota'); }
     protected function render($view,$data=array(),$layout='admin'){
+        if($view==='admin/resoluciones/form' && $this->input->is_ajax_request() && $this->input->method()==='post'){
+            $mensaje=trim(strip_tags(validation_errors('',' ')));
+            $this->output->set_status_header(422)->set_content_type('application/json')->set_output(json_encode(array(
+                'ok'=>FALSE,'error'=>$data['error']??($mensaje ?: 'Revise los datos del formulario.'),
+                'csrf_name'=>$this->security->get_csrf_token_name(),'csrf_hash'=>$this->security->get_csrf_hash()
+            )));
+            return;
+        }
         $data['content_view']=$view;
         $this->load->view('layouts/'.$layout,$data);
     }
