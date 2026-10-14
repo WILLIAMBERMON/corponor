@@ -1,7 +1,7 @@
 <section class="hero-resolutions mb-4">
     <span class="eyebrow">Consulta pública</span>
     <h1>Resoluciones</h1>
-    <p>Consulte los actos publicados por año y grupo.</p>
+    <p>Consulte los actos publicados por vigencia y territorial.</p>
 </section>
 <div class="filter-box mb-4">
     <?= form_open('resoluciones',array('method'=>'get')) ?>
@@ -10,7 +10,7 @@
         <div class="col-lg-6"><label class="form-label">Fecha</label><input type="date" name="fecha" class="form-control" value="<?= html_escape($f['fecha']??'') ?>"></div>
         </div>
     <div class="row g-3 align-items-start mt-0">
-        <div class="col-lg-7"><label class="form-label" for="grupos">Grupos</label><select id="grupos" data-placeholder="Todos los grupos" name="grupo[]" class="form-select resolution-select2" multiple><?php foreach($grupos as $g): ?><option value="<?= (int)$g->id ?>" <?= in_array((int)$g->id,$f['grupo'],TRUE)?'selected':'' ?>><?= html_escape($g->descripcion) ?></option><?php endforeach; ?></select></div>
+        <div class="col-lg-7"><label class="form-label" for="territoriales">Territorial</label><select id="territoriales" data-placeholder="Todas las territoriales" name="territorial[]" class="form-select resolution-select2" multiple><?php foreach($territoriales as $clave=>$nombre): ?><option value="<?= html_escape($clave) ?>" <?= in_array($clave,$f['territorial'],TRUE)?'selected':'' ?>><?= html_escape($nombre) ?></option><?php endforeach; ?></select></div>
         <div class="col-lg-4"><label class="form-label" for="vigencias">Vigencias</label><select id="vigencias" data-placeholder="Todas las vigencias" name="vigencia[]" class="form-select resolution-select2" multiple><?php foreach($anios as $item): ?><option value="<?= (int)$item->anio ?>" <?= in_array((int)$item->anio,$f['vigencia'],TRUE)?'selected':'' ?>><?= (int)$item->anio ?></option><?php endforeach; ?></select></div>
         <div class="col-lg-1 d-grid"><span class="form-label d-none d-lg-block" aria-hidden="true">&nbsp;</span><button class="btn btn-corponor resolution-search-button" title="Buscar" aria-label="Buscar resoluciones"><i class="bi bi-search"></i></button></div>
     </div>

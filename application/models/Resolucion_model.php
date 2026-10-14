@@ -1,5 +1,27 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
 class Resolucion_model extends CI_Model {
+ private $gruposTerritoriales = NULL;
+ public function territoriales(){ return array('cucuta'=>'Cúcuta','tibu'=>'Tibú','ocana'=>'Ocaña','pamplona'=>'Pamplona'); }
+ public function territorial_de_grupo($descripcion){
+  $texto=strtolower(strtr((string)$descripcion,array('Á'=>'a','É'=>'e','Í'=>'i','Ó'=>'o','Ú'=>'u','Ñ'=>'n','á'=>'a','é'=>'e','í'=>'i','ó'=>'o','ú'=>'u','ñ'=>'n')));
+  foreach($this->territoriales() as $clave=>$nombre){
+   $patron=$clave==='pamplona'?'pamplonas?':$clave;
+   if(preg_match('/(?<![a-z])'.$patron.'(?![a-z])/',$texto)) return $clave;
+  }
+  return NULL;
+ }
+ private function filtrar_territoriales($f){
+  if(empty($f['territorial'])) return;
+  if($this->gruposTerritoriales===NULL){
+   // Use a separate query builder so this lookup does not alter the search query.
+   $rows=$this->db->query('SELECT id, descripcion FROM grupos_resoluciones')->result();
+   $this->gruposTerritoriales=array();
+   foreach($rows as $g) $this->gruposTerritoriales[$g->id]=$this->territorial_de_grupo($g->descripcion);
+  }
+  $ids=array();
+  foreach($this->gruposTerritoriales as $id=>$territorial) if(in_array($territorial,(array)$f['territorial'],TRUE)) $ids[]=(int)$id;
+  $this->db->where_in('r.grupo_id',$ids ?: array(0));
+ }
  private function ordenar_por_grupo_anio($rows){ usort($rows,function($a,$b){ preg_match('/\\b(19|20)\\d{2}\\b/',(string)$a->grupo_descripcion,$ma); preg_match('/\\b(19|20)\\d{2}\\b/',(string)$b->grupo_descripcion,$mb); $ya=isset($ma[0])?(int)$ma[0]:0; $yb=isset($mb[0])?(int)$mb[0]:0; if($ya!==$yb) return $yb<=>$ya; $grupo=strcasecmp((string)$a->grupo_descripcion,(string)$b->grupo_descripcion); if($grupo!==0) return $grupo; $fecha=strcmp((string)$b->fecha_resolucion,(string)$a->fecha_resolucion); if($fecha!==0) return $fecha; return (int)$b->id <=> (int)$a->id; }); return $rows; }
  public function buscar($f=array(),$limite=NULL,$offset=0){
   $this->db->select('r.*, g.descripcion grupo_descripcion, g.consecutivo grupo_consecutivo')->from('resoluciones r')->join('grupos_resoluciones g','g.id=r.grupo_id')->where('r.activo',1);
@@ -7,6 +29,7 @@ class Resolucion_model extends CI_Model {
   if(!empty($f['fecha'])) $this->db->where('r.fecha_resolucion',$f['fecha']);
   if(!empty($f['grupo'])) $this->db->where_in('r.grupo_id',(array)$f['grupo']);
   if(!empty($f['vigencia'])) $this->db->where_in('YEAR(r.fecha_resolucion)',(array)$f['vigencia']);
+  $this->filtrar_territoriales($f);
   $this->db->order_by('g.descripcion','ASC')->order_by('r.fecha_resolucion','DESC')->order_by('r.id','DESC');
   if($limite!==NULL) $this->db->limit((int)$limite,(int)$offset);
   return $this->ordenar_por_grupo_anio($this->db->get()->result());
@@ -17,6 +40,7 @@ class Resolucion_model extends CI_Model {
   if(!empty($f['fecha'])) $this->db->where('r.fecha_resolucion',$f['fecha']);
   if(!empty($f['grupo'])) $this->db->where_in('r.grupo_id',(array)$f['grupo']);
   if(!empty($f['vigencia'])) $this->db->where_in('YEAR(r.fecha_resolucion)',(array)$f['vigencia']);
+  $this->filtrar_territoriales($f);
   return (int)$this->db->count_all_results();
  }
  public function anios_publicos(){
