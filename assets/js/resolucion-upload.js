@@ -33,13 +33,13 @@
             let size = 0;
             for (const [field, value] of data.entries()) {
                 if (value instanceof File) {
-                    const max = field === 'imagen' ? 4 : 16;
-                    if (value.size > max * 1024 * 1024) throw new Error('El archivo ' + value.name + ' supera el límite de ' + max + ' MB.');
+                    const max = config.limites[field];
+                    if (max > 0 && value.size > max) throw new Error('El archivo ' + value.name + ' supera el límite de ' + (max / 1048576) + ' MB.');
                     if (config.upload_max > 0 && value.size > config.upload_max) throw new Error('PHP permite solo ' + (config.upload_max / 1048576).toFixed(1) + ' MB por archivo. Ajuste upload_max_filesize en el hosting.');
                     size += value.size;
                 } else size += new Blob([value]).size;
             }
-            if (config.post_max > 0 && size + 65536 > config.post_max) throw new Error('El formulario supera el límite de PHP. Aumente post_max_size en el hosting (recomendado: 24M).');
+            if (config.post_max > 0 && size + 65536 > config.post_max) throw new Error('El formulario supera el límite de PHP. Aumente post_max_size en el hosting.');
             const xhr = new XMLHttpRequest();
             xhr.open('POST', form.action);
             xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');

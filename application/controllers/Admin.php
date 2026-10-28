@@ -1,6 +1,6 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
 class Admin extends MY_Controller {
- public function __construct(){ parent::__construct(); $this->require_login(); $this->load->model(array('Usuario_model','Grupo_model','Resolucion_model')); }
+ public function __construct(){ parent::__construct(); $this->config->load('cargas',TRUE); $this->require_login(); $this->load->model(array('Usuario_model','Grupo_model','Resolucion_model')); }
  public function dashboard(){ $this->render('admin/dashboard',array('title'=>'Panel principal')); }
  public function usuarios(){ $this->require_admin(); $this->render('admin/usuarios/index',array('title'=>'Usuarios','usuarios'=>$this->Usuario_model->todos())); }
  public function usuario_crear(){ $this->guardar_usuario(); }
@@ -97,11 +97,11 @@ class Admin extends MY_Controller {
  public function carga_config(){
   $datos=array(
    'csrf_name'=>$this->security->get_csrf_token_name(),'csrf_hash'=>$this->security->get_csrf_hash(),
-   'upload_max'=>$this->limite_bytes(ini_get('upload_max_filesize')),'post_max'=>$this->limite_bytes(ini_get('post_max_size'))
+   'upload_max'=>$this->config->item('upload_max','cargas'),'post_max'=>$this->config->item('post_max','cargas'),'limites'=>$this->config->item('limites','cargas')
   );
   if($this->input->get('diagnostico')==='1'){
    $this->require_admin();
-   $datos=array('upload_max'=>$datos['upload_max'],'post_max'=>$datos['post_max'],'diagnostico'=>array(
+   $datos=array('upload_max'=>$datos['upload_max'],'post_max'=>$datos['post_max'],'limites'=>$datos['limites'],'diagnostico'=>array(
     'php_version'=>PHP_VERSION,'php_sapi'=>PHP_SAPI,
     'php_ini'=>php_ini_loaded_file() ?: NULL,'ini_adicionales'=>php_ini_scanned_files() ?: NULL,
     'raiz_aplicacion'=>FCPATH,'user_ini_nombre'=>ini_get('user_ini.filename'),
@@ -111,11 +111,6 @@ class Admin extends MY_Controller {
   }
   $this->output->set_content_type('application/json')->set_header('Cache-Control: no-store')->set_output(json_encode($datos));
  }
- private function limite_bytes($valor){
-  $valor=trim($valor); $numero=(float)$valor;
-  switch(strtolower(substr($valor,-1))){ case 'g': $numero*=1024; case 'm': $numero*=1024; case 'k': $numero*=1024; }
-  return (int)$numero;
- }
  private function resolucion_guardada(){
   if($this->input->is_ajax_request()){
    $this->output->set_content_type('application/json')->set_output(json_encode(array('ok'=>TRUE,'redirect'=>site_url('admin/resoluciones'))));
@@ -123,9 +118,9 @@ class Admin extends MY_Controller {
   }
   redirect('admin/resoluciones');
  }
- private function upload($field,$dir,$types,$max=16384){ if(empty($_FILES[$field]['name'])) return NULL; $config=array('upload_path'=>FCPATH.$dir,'allowed_types'=>$types,'max_size'=>$max,'encrypt_name'=>TRUE,'remove_spaces'=>TRUE); $this->load->library('upload'); $this->upload->initialize($config); if(!$this->upload->do_upload($field)) throw new RuntimeException(strip_tags($this->upload->display_errors())); return $dir.'/'.$this->upload->data('file_name'); }
- public function resolucion_crear(){ $grupos=$this->Grupo_model->todos(); if($this->input->method()==='post'){ $this->validar_resolucion(); if($this->form_validation->run()){ try { $archivo=$this->upload('archivo','uploads/resoluciones','pdf'); $imagen=$this->upload('imagen','uploads/imagenes','jpg|jpeg|png|webp',4096); if(!$archivo && !$this->input->post('url')) throw new RuntimeException('Debe cargar un archivo PDF o indicar una URL.'); $guardado=$this->Resolucion_model->crear(array('grupo_id'=>(int)$this->input->post('grupo_id'),'titulo'=>$this->input->post('titulo',TRUE),'fecha_resolucion'=>$this->input->post('fecha_resolucion',TRUE),'archivo'=>$archivo,'url'=>$this->input->post('url',TRUE) ?: NULL,'imagen'=>$imagen,'activo'=>1)); if(!$guardado) throw new RuntimeException('No fue posible guardar la resolución.'); $this->session->set_flashdata('success','Resolución creada.'); return $this->resolucion_guardada(); } catch(Exception $e){ $data['error']=$e->getMessage(); } }} $this->render('admin/resoluciones/form',array_merge($data??array(),array('title'=>'Crear resolución','grupos'=>$grupos,'resolucion'=>NULL))); }
- public function resolucion_editar($id){ $r=$this->Resolucion_model->una((int)$id); if(!$r) show_404(); $this->exigir_grupo($r->grupo_id); $grupos=$this->Grupo_model->todos(); if($this->input->method()==='post'){ $this->validar_resolucion(); if($this->form_validation->run()){ try { $archivo=$this->upload('archivo','uploads/resoluciones','pdf'); $imagen=$this->upload('imagen','uploads/imagenes','jpg|jpeg|png|webp',4096); $d=array('grupo_id'=>(int)$this->input->post('grupo_id'),'titulo'=>$this->input->post('titulo',TRUE),'fecha_resolucion'=>$this->input->post('fecha_resolucion',TRUE),'url'=>$this->input->post('url',TRUE) ?: NULL,'activo'=>$this->input->post('activo')?1:0); if($archivo) $d['archivo']=$archivo; if($imagen) $d['imagen']=$imagen; if(!$archivo && !$r->archivo && !$d['url']) throw new RuntimeException('Debe existir archivo PDF o URL.'); if(!$this->Resolucion_model->actualizar($r->id,$d)) throw new RuntimeException('No fue posible guardar la resolución.'); $this->session->set_flashdata('success','Resolución actualizada.'); return $this->resolucion_guardada(); }catch(Exception $e){$data['error']=$e->getMessage();}}} $this->render('admin/resoluciones/form',array_merge($data??array(),array('title'=>'Editar resolución','grupos'=>$grupos,'resolucion'=>$r))); }
+ private function upload($field,$dir,$types){ if(empty($_FILES[$field]['name'])) return NULL; $limites=$this->config->item('limites','cargas'); $max=$limites[$field]/1024; $config=array('upload_path'=>FCPATH.$dir,'allowed_types'=>$types,'max_size'=>$max,'encrypt_name'=>TRUE,'remove_spaces'=>TRUE); $this->load->library('upload'); $this->upload->initialize($config); if(!$this->upload->do_upload($field)) throw new RuntimeException(strip_tags($this->upload->display_errors())); return $dir.'/'.$this->upload->data('file_name'); }
+ public function resolucion_crear(){ $grupos=$this->Grupo_model->todos(); if($this->input->method()==='post'){ $this->validar_resolucion(); if($this->form_validation->run()){ try { $archivo=$this->upload('archivo','uploads/resoluciones','pdf'); $imagen=$this->upload('imagen','uploads/imagenes','jpg|jpeg|png|webp'); if(!$archivo && !$this->input->post('url')) throw new RuntimeException('Debe cargar un archivo PDF o indicar una URL.'); $guardado=$this->Resolucion_model->crear(array('grupo_id'=>(int)$this->input->post('grupo_id'),'titulo'=>$this->input->post('titulo',TRUE),'fecha_resolucion'=>$this->input->post('fecha_resolucion',TRUE),'archivo'=>$archivo,'url'=>$this->input->post('url',TRUE) ?: NULL,'imagen'=>$imagen,'activo'=>1)); if(!$guardado) throw new RuntimeException('No fue posible guardar la resolución.'); $this->session->set_flashdata('success','Resolución creada.'); return $this->resolucion_guardada(); } catch(Exception $e){ $data['error']=$e->getMessage(); } }} $this->render('admin/resoluciones/form',array_merge($data??array(),array('title'=>'Crear resolución','grupos'=>$grupos,'resolucion'=>NULL))); }
+ public function resolucion_editar($id){ $r=$this->Resolucion_model->una((int)$id); if(!$r) show_404(); $this->exigir_grupo($r->grupo_id); $grupos=$this->Grupo_model->todos(); if($this->input->method()==='post'){ $this->validar_resolucion(); if($this->form_validation->run()){ try { $archivo=$this->upload('archivo','uploads/resoluciones','pdf'); $imagen=$this->upload('imagen','uploads/imagenes','jpg|jpeg|png|webp'); $d=array('grupo_id'=>(int)$this->input->post('grupo_id'),'titulo'=>$this->input->post('titulo',TRUE),'fecha_resolucion'=>$this->input->post('fecha_resolucion',TRUE),'url'=>$this->input->post('url',TRUE) ?: NULL,'activo'=>$this->input->post('activo')?1:0); if($archivo) $d['archivo']=$archivo; if($imagen) $d['imagen']=$imagen; if(!$archivo && !$r->archivo && !$d['url']) throw new RuntimeException('Debe existir archivo PDF o URL.'); if(!$this->Resolucion_model->actualizar($r->id,$d)) throw new RuntimeException('No fue posible guardar la resolución.'); $this->session->set_flashdata('success','Resolución actualizada.'); return $this->resolucion_guardada(); }catch(Exception $e){$data['error']=$e->getMessage();}}} $this->render('admin/resoluciones/form',array_merge($data??array(),array('title'=>'Editar resolución','grupos'=>$grupos,'resolucion'=>$r))); }
  public function fecha_resolucion_valida($valor){
   $zona=new DateTimeZone('America/Bogota');
   $fecha=is_string($valor)?DateTimeImmutable::createFromFormat('!Y-m-d',$valor,$zona):FALSE;

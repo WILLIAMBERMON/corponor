@@ -34,6 +34,32 @@ Si el servidor usa varias versiones de PHP, confirme que Composer se ejecute con
 6. Dé permisos de escritura a `application/cache`, `application/logs`, `uploads/resoluciones` y `uploads/imagenes`.
 7. En Apache habilite mod_rewrite y AllowOverride All. Para Nginx redirija rutas inexistentes a `/index.php`.
 
+## Configuración de carga de archivos
+
+Los límites de PDF e imagen se pueden definir con `UPLOAD_PDF_MAX_MB` y
+`UPLOAD_IMAGE_MAX_MB` (MB, admite decimales positivos), como variables de entorno
+del servidor o mediante `SetEnv` en `.htaccess`:
+
+```apache
+<IfModule mod_env.c>
+  SetEnv UPLOAD_PDF_MAX_MB 32
+  SetEnv UPLOAD_IMAGE_MAX_MB 4
+</IfModule>
+```
+
+Si no se definen o son inválidas, se usa `upload_max_filesize` de PHP para ambos
+tipos. Siempre prevalece el límite menor entre la variable y PHP. El formulario,
+la comprobación previa y la validación del servidor comparten estos valores.
+Un archivo `.env` no se carga automáticamente.
+
+Para cambiar el límite de PHP, el bloque LiteSpeed de `.htaccess` ya configura
+`upload_max_filesize 32M` y `post_max_size 48M`. En Apache con mod_php se pueden
+usar esas directivas `php_value` en el bloque correspondiente al módulo; con
+PHP-FPM se configuran en `php.ini`, `.user.ini` o el panel del hosting.
+Las variables `UPLOAD_*` no aumentan los límites de PHP. `post_max_size` limita
+el formulario completo: debe dejar espacio para el PDF, la imagen y los demás
+campos. El servidor web también puede imponer su propio límite de petición.
+
 ## Usuario inicial
 - Documento: `1000000000`
 - Clave: `Admin123*`

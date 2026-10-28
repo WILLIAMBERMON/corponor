@@ -1,10 +1,17 @@
+# Limites opcionales de la aplicacion, en MB. Sin ellos se usa upload_max_filesize.
+# Tambien pueden definirse como variables de entorno del servidor.
+# <IfModule mod_env.c>
+#   SetEnv UPLOAD_PDF_MAX_MB 32
+#   SetEnv UPLOAD_IMAGE_MAX_MB 4
+# </IfModule>
+
 <IfModule LiteSpeed>
   # PHP 8.1: handler used by the production CloudLinux hosting.
   <FilesMatch "\.(php4|php5|php3|php2|php|phtml)$">
     SetHandler application/x-httpd-alt-php81___lsphp
   </FilesMatch>
-  php_value upload_max_filesize 16M
-  php_value post_max_size 24M
+  php_value upload_max_filesize 32M
+  php_value post_max_size 48M
 </IfModule>
 
 <IfModule mod_rewrite.c>
