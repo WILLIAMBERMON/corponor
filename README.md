@@ -26,7 +26,7 @@ composer install --no-dev --optimize-autoloader
 Si el servidor usa varias versiones de PHP, confirme que Composer se ejecute con PHP 8.1.
 3. Importe `database/corponor_resoluciones.sql`.
 4. Para una base existente, ejecute `database/migracion_estadisticas_permisos.sql`. Crea los eventos de visitas/descargas y la asignación de usuarios a grupos sin eliminar datos.
-4. Configure variables de entorno del servidor o ajuste `application/config/database.php`:
+4. Copie `ENV.example` a `.env` en la raíz (junto a `index.php`) y configure sus valores, o defina variables de entorno del servidor:
    - DB_HOST, DB_USER, DB_PASS, DB_NAME
    - APP_URL y APP_KEY
 5. Configure SMTP:
@@ -50,7 +50,11 @@ del servidor o mediante `SetEnv` en `.htaccess`:
 Si no se definen o son inválidas, se usa `upload_max_filesize` de PHP para ambos
 tipos. Siempre prevalece el límite menor entre la variable y PHP. El formulario,
 la comprobación previa y la validación del servidor comparten estos valores.
-Un archivo `.env` no se carga automáticamente.
+El archivo `.env` de la raíz se carga antes de iniciar CodeIgniter. Las variables
+ya definidas por el servidor tienen prioridad. Se admiten líneas `CLAVE=valor`,
+valores vacíos, comillas exteriores opcionales y comentarios en líneas que
+comiencen por `#`; los valores no se interpolan. En producción defina
+`CI_ENV=production`. No incluya `.env` en Git.
 
 Para cambiar el límite de PHP, el bloque LiteSpeed de `.htaccess` ya configura
 `upload_max_filesize 32M` y `post_max_size 48M`. En Apache con mod_php se pueden

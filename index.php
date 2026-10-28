@@ -1,5 +1,8 @@
 <?php
-define('ENVIRONMENT', $_SERVER['CI_ENV'] ?? 'development');
+$loadEnvironment = require __DIR__.'/application/bootstrap/environment.php';
+$loadEnvironment(__DIR__.'/.env');
+unset($loadEnvironment);
+define('ENVIRONMENT', $_SERVER['CI_ENV'] ?? (getenv('CI_ENV') ?: 'development'));
 switch (ENVIRONMENT) {
     case 'development': error_reporting(-1); ini_set('display_errors', 1); break;
     default: ini_set('display_errors', 0); if (version_compare(PHP_VERSION, '5.3', '>=')) error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT & ~E_USER_NOTICE & ~E_DEPRECATED & ~E_USER_DEPRECATED); else error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT & ~E_USER_NOTICE);
