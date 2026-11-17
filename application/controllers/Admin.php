@@ -77,6 +77,13 @@ class Admin extends MY_Controller {
   $novedades=$ultima ? $this->Revision_enlaces_model->pendientes((int)$ultima->id) : array();
   $this->render('admin/enlaces',array('title'=>'Novedades de enlaces','ultima'=>$ultima,'novedades'=>$novedades));
  }
+ public function enlaces_csrf(){
+  $this->require_admin();
+  $this->output->set_content_type('application/json')->set_header('Cache-Control: no-store')->set_output(json_encode(array(
+   'csrf_name'=>$this->security->get_csrf_token_name(),
+   'csrf_hash'=>$this->security->get_csrf_hash()
+  )));
+ }
  public function enlaces_iniciar(){
   $this->require_admin(); $this->exigir_post();
   $this->load->model('Revision_enlaces_model');

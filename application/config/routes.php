@@ -38,3 +38,4 @@ $route['admin/grupos-acuerdos/crear']='acuerdos/grupo_crear';
 $route['admin/grupos-acuerdos/editar/(:num)']='acuerdos/grupo_editar/$1';
 $route['admin/grupos-acuerdos/eliminar/(:num)']='acuerdos/grupo_eliminar/$1';
 $route['admin/usuarios/permisos-acuerdos/(:num)']='acuerdos/permisos/$1';
+$route['admin/enlaces/csrf'] = 'admin/enlaces_csrf';

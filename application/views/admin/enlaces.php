@@ -18,7 +18,7 @@
 <script>
 document.addEventListener('DOMContentLoaded',function(){
  const iniciar=document.getElementById('iniciar-revision'),reintentar=document.getElementById('revision-reintentar'),estado=document.getElementById('revision-estado');
- const inicio=<?= json_encode(site_url('admin/enlaces/iniciar')) ?>,lote=<?= json_encode(site_url('admin/enlaces/lote')) ?>;
+ const inicio=<?= json_encode(site_url('admin/enlaces/iniciar')) ?>,lote=<?= json_encode(site_url('admin/enlaces/lote')) ?>,tokenUrl=<?= json_encode(site_url('admin/enlaces/csrf')) ?>;
  const editarResolucion=<?= json_encode(site_url('admin/resoluciones/editar/')) ?>,editarAcuerdo=<?= json_encode(site_url('admin/acuerdos/editar/')) ?>;
  let csrfName=<?= json_encode($this->security->get_csrf_token_name()) ?>,csrfHash=<?= json_encode($this->security->get_csrf_hash()) ?>;
  let revisionId=0,trabajando=false;
@@ -33,11 +33,24 @@ document.addEventListener('DOMContentLoaded',function(){
   if(tabla){const cells=valores.map(x=>{const span=document.createElement('span');span.textContent=x||'';return span.outerHTML});cells.push(a.outerHTML);tabla.row.add(cells).draw(false);}
   else {const tr=document.createElement('tr');valores.forEach(x=>{const td=document.createElement('td');td.textContent=x||'';tr.appendChild(td)});const td=document.createElement('td');td.appendChild(a);tr.appendChild(td);cuerpo.appendChild(tr);}
  }
- async function post(url,extra){const body=new URLSearchParams(extra);body.set(csrfName,csrfHash);
-  const res=await fetch(url,{method:'POST',credentials:'same-origin',cache:'no-store',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:body.toString()});
-  if(!res.ok||res.redirected)throw new Error('HTTP '+res.status);
-  const data=await res.json();if(data.csrf_hash)csrfHash=data.csrf_hash;return data;
+ async function renovarCsrf(){
+  const res=await fetch(tokenUrl,{method:'GET',credentials:'same-origin',cache:'no-store',headers:{'Accept':'application/json'}});
+  if(!res.ok||res.redirected)throw new Error('No se pudo renovar CSRF (HTTP '+res.status+'). Revise sesión o reglas del servidor.');
+  const data=await res.json();if(!data.csrf_name||!data.csrf_hash)throw new Error('Respuesta CSRF inválida');
+  csrfName=data.csrf_name;csrfHash=data.csrf_hash;
  }
+ async function post(url,extra){
+  for(let intento=0;intento<2;intento++){
+   const body=new URLSearchParams(extra);body.set(csrfName,csrfHash);
+   const res=await fetch(url,{method:'POST',credentials:'same-origin',cache:'no-store',headers:{'Content-Type':'application/x-www-form-urlencoded','Accept':'application/json'},body:body.toString()});
+   if(res.status===403 && intento===0){await renovarCsrf();continue;}
+   if(!res.ok||res.redirected)throw new Error('HTTP '+res.status+' en '+new URL(url,location.href).pathname+(res.status===403?' (sesión, permisos, CSRF o WAF)':''));
+   const contentType=res.headers.get('content-type')||'';
+   if(!contentType.includes('application/json'))throw new Error('Respuesta no JSON; verifique sesión o redirecciones');
+   const data=await res.json();if(data.csrf_name)csrfName=data.csrf_name;if(data.csrf_hash)csrfHash=data.csrf_hash;return data;
+  }
+ }
+
  async function revisar(nueva){if(trabajando)return;trabajando=true;iniciar.disabled=true;reintentar.hidden=true;
   try{if(nueva||!revisionId){const d=await post(inicio,{});revisionId=d.revision_id;vaciar();}
    while(true){const d=await post(lote,{revision_id:String(revisionId)});
