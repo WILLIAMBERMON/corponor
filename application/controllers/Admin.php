@@ -92,15 +92,22 @@ class Admin extends MY_Controller {
   $revision=$this->Revision_enlaces_model->una($id);
   if(!$revision || $revision->estado!=='en_curso') show_error('Revisión no disponible.',409);
   $antes=(int)$revision->cursor_id;
-  if($antes<1){ $this->Revision_enlaces_model->finalizar($id); $datos=array('fin'=>true,'revisados'=>(int)$revision->revisados,'novedades'=>(int)$revision->novedades); }
-  else {
-   $registros=$this->Resolucion_model->enlaces_a_verificar($antes);
-   if(!$registros){ $this->Revision_enlaces_model->finalizar($id); $datos=array('fin'=>true,'revisados'=>(int)$revision->revisados,'novedades'=>(int)$revision->novedades); }
-   else {
-    $r=$registros[0]; $resultado=$this->verificar_enlace($r);
-    $this->Revision_enlaces_model->registrar($id,$r,$resultado);
-    $datos=array('fin'=>false,'antes'=>(int)$r->id,'revisados'=>(int)$revision->revisados+1,'novedades'=>(int)$revision->novedades+($resultado['problema']?1:0),'novedad'=>$resultado['problema']?array('resolucion'=>$r,'resultado'=>$resultado):NULL);
-   }
+  $fase=$revision->fase;
+  $registros=$fase==='resoluciones'?$this->Resolucion_model->enlaces_a_verificar($antes):$this->Revision_enlaces_model->siguiente_acuerdo($antes);
+  if(!$registros && $fase==='resoluciones'){
+   $this->Revision_enlaces_model->pasar_acuerdos($id);
+   $revision=$this->Revision_enlaces_model->una($id);
+   $fase='acuerdos';
+   $registros=$this->Revision_enlaces_model->siguiente_acuerdo((int)$revision->cursor_id);
+  }
+  if(!$registros){
+   $this->Revision_enlaces_model->finalizar($id);
+   $datos=array('fin'=>true,'revisados'=>(int)$revision->revisados,'novedades'=>(int)$revision->novedades);
+  } else {
+   $r=$registros[0]; $tipo_doc=$fase==='acuerdos'?'acuerdo':'resolucion';
+   $resultado=$this->verificar_enlace($r);
+   if(!$this->Revision_enlaces_model->registrar($id,$r,$resultado,$tipo_doc)) show_error('No fue posible registrar el resultado.',409);
+   $datos=array('fin'=>false,'antes'=>(int)$r->id,'revisados'=>(int)$revision->revisados+1,'novedades'=>(int)$revision->novedades+($resultado['problema']?1:0),'novedad'=>$resultado['problema']?array('documento'=>$r,'tipo_documento'=>$tipo_doc,'resultado'=>$resultado):NULL);
   }
   $datos['csrf_name']=$this->security->get_csrf_token_name(); $datos['csrf_hash']=$this->security->get_csrf_hash();
   $this->output->set_content_type('application/json')->set_header('Cache-Control: no-store')->set_output(json_encode($datos));
