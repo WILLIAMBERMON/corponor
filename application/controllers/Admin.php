@@ -72,27 +72,59 @@ class Admin extends MY_Controller {
  public function resoluciones(){ $super=$this->Usuario_model->es_superadmin(); $grupo=(int)$this->input->get('grupo',TRUE); $this->render('admin/resoluciones/index',array('title'=>'Administrar resoluciones','resoluciones'=>$this->Resolucion_model->todas_admin(NULL,$super,$grupo),'grupos'=>$this->Grupo_model->todos($this->session->userdata('usuario_id'),$super),'grupo_seleccionado'=>$grupo)); }
  public function enlaces(){
   $this->require_admin();
-  $total=(int)$this->db->count_all_results('resoluciones');
-  $max=$this->db->select_max('id')->get('resoluciones')->row();
-  $this->render('admin/enlaces',array('title'=>'Novedades de enlaces','total'=>$total,'antes'=>(int)$max->id+1));
+  $this->load->model('Revision_enlaces_model');
+  $ultima=$this->Revision_enlaces_model->ultima();
+  $novedades=$ultima ? $this->Revision_enlaces_model->pendientes((int)$ultima->id) : array();
+  $this->render('admin/enlaces',array('title'=>'Novedades de enlaces','ultima'=>$ultima,'novedades'=>$novedades));
+ }
+ public function enlaces_iniciar(){
+  $this->require_admin(); $this->exigir_post();
+  $this->load->model('Revision_enlaces_model');
+  $activa=$this->Revision_enlaces_model->activa();
+  if($activa){ $id=(int)$activa->id; $antes=(int)$activa->cursor_id; }
+  else { $id=$this->Revision_enlaces_model->iniciar((int)$this->session->userdata('usuario_id')); $antes=$this->Revision_enlaces_model->cursor_inicial(); }
+  $this->output->set_content_type('application/json')->set_header('Cache-Control: no-store')->set_output(json_encode(array('revision_id'=>$id,'antes'=>$antes,'csrf_name'=>$this->security->get_csrf_token_name(),'csrf_hash'=>$this->security->get_csrf_hash())));
  }
  public function enlaces_lote(){
-  $this->require_admin(); $antes=$this->input->get('antes');
-  if(!is_scalar($antes) || !ctype_digit((string)$antes) || (int)$antes<1) show_error('Cursor inválido.',400);
-  $registros=$this->Resolucion_model->enlaces_a_verificar((int)$antes);
-  $datos=array('fin'=>!$registros,'antes'=>(int)$antes,'novedad'=>NULL);
-  if($registros){
-   $r=$registros[0]; $resultado=$this->verificar_enlace($r); $datos['antes']=(int)$r->id;
-   if($resultado['problema']) $datos['novedad']=array('resolucion'=>$r,'resultado'=>$resultado);
+  $this->require_admin(); $this->exigir_post();
+  $this->load->model('Revision_enlaces_model');
+  $id=(int)$this->input->post('revision_id');
+  $revision=$this->Revision_enlaces_model->una($id);
+  if(!$revision || $revision->estado!=='en_curso') show_error('Revisión no disponible.',409);
+  $antes=(int)$revision->cursor_id;
+  if($antes<1){ $this->Revision_enlaces_model->finalizar($id); $datos=array('fin'=>true,'revisados'=>(int)$revision->revisados,'novedades'=>(int)$revision->novedades); }
+  else {
+   $registros=$this->Resolucion_model->enlaces_a_verificar($antes);
+   if(!$registros){ $this->Revision_enlaces_model->finalizar($id); $datos=array('fin'=>true,'revisados'=>(int)$revision->revisados,'novedades'=>(int)$revision->novedades); }
+   else {
+    $r=$registros[0]; $resultado=$this->verificar_enlace($r);
+    $this->Revision_enlaces_model->registrar($id,$r,$resultado);
+    $datos=array('fin'=>false,'antes'=>(int)$r->id,'revisados'=>(int)$revision->revisados+1,'novedades'=>(int)$revision->novedades+($resultado['problema']?1:0),'novedad'=>$resultado['problema']?array('resolucion'=>$r,'resultado'=>$resultado):NULL);
+   }
   }
+  $datos['csrf_name']=$this->security->get_csrf_token_name(); $datos['csrf_hash']=$this->security->get_csrf_hash();
   $this->output->set_content_type('application/json')->set_header('Cache-Control: no-store')->set_output(json_encode($datos));
  }
  private function verificar_enlace($r){
-  if($r->archivo){ $ruta=FCPATH.ltrim(str_replace('/',DIRECTORY_SEPARATOR,$r->archivo),DIRECTORY_SEPARATOR); if(!is_file($ruta)) return array('problema'=>true,'tipo'=>'Archivo local','estado'=>'No encontrado','detalle'=>$r->archivo); return array('problema'=>false,'tipo'=>'Archivo local','estado'=>'OK','detalle'=>'Archivo disponible'); }
+  if($r->archivo){
+   $rel=ltrim(str_replace('\\','/',$r->archivo),'/');
+   $raiz=realpath(FCPATH); $ruta=realpath(FCPATH.$rel);
+   if(!$raiz || !$ruta || strpos($ruta,$raiz.DIRECTORY_SEPARATOR)!==0 || !is_file($ruta) || !is_readable($ruta)) return array('problema'=>true,'tipo'=>'Archivo local','estado'=>'No encontrado','detalle'=>'Archivo ausente o no legible: '.$rel);
+   return array('problema'=>false,'tipo'=>'Archivo local','estado'=>'OK','detalle'=>'Archivo disponible');
+  }
   if(!$r->url) return array('problema'=>true,'tipo'=>'Sin origen','estado'=>'Sin enlace','detalle'=>'Debe cargar un PDF o registrar una URL.');
   if(!function_exists('curl_init')) return array('problema'=>true,'tipo'=>'URL','estado'=>'No verificable','detalle'=>'La extensión cURL de PHP no está disponible.');
-  $ch=curl_init($r->url); curl_setopt_array($ch,array(CURLOPT_NOBODY=>true,CURLOPT_FOLLOWLOCATION=>true,CURLOPT_MAXREDIRS=>5,CURLOPT_CONNECTTIMEOUT=>5,CURLOPT_TIMEOUT=>12,CURLOPT_RETURNTRANSFER=>true,CURLOPT_USERAGENT=>'Corponor Resoluciones Link Checker/1.0',CURLOPT_SSL_VERIFYPEER=>true,CURLOPT_SSL_VERIFYHOST=>2)); curl_exec($ch); $code=(int)curl_getinfo($ch,CURLINFO_HTTP_CODE); $error=curl_error($ch); curl_close($ch);
-  if($code>=200 && $code<400) return array('problema'=>false,'tipo'=>'URL','estado'=>'HTTP '.$code,'detalle'=>'Enlace disponible'); return array('problema'=>true,'tipo'=>'URL','estado'=>$code?'HTTP '.$code:'Error de conexión','detalle'=>$error?:'El servidor no respondió correctamente.');
+  $url=trim($r->url); $partes=parse_url($url);
+  if(!$partes || !isset($partes['scheme'],$partes['host']) || !in_array(strtolower($partes['scheme']),array('http','https'),true)) return array('problema'=>true,'tipo'=>'URL','estado'=>'URL inválida','detalle'=>'Solo se admiten enlaces HTTP/HTTPS.');
+  // No seguir redirecciones a redes internas; evitar consultas SSRF desde el servidor.
+  $host=$partes['host']; $ips=gethostbynamel($host);
+  if(!$ips) return array('problema'=>true,'tipo'=>'URL','estado'=>'DNS no disponible','detalle'=>'No se pudo resolver el dominio.');
+  foreach($ips as $ip){ if(!filter_var($ip,FILTER_VALIDATE_IP,FILTER_FLAG_NO_PRIV_RANGE|FILTER_FLAG_NO_RES_RANGE)) return array('problema'=>true,'tipo'=>'URL','estado'=>'Destino no permitido','detalle'=>'El dominio resuelve a una dirección no pública.'); }
+  $ch=curl_init($url);
+  curl_setopt_array($ch,array(CURLOPT_NOBODY=>true,CURLOPT_FOLLOWLOCATION=>false,CURLOPT_CONNECTTIMEOUT=>5,CURLOPT_TIMEOUT=>12,CURLOPT_RETURNTRANSFER=>true,CURLOPT_USERAGENT=>'Corponor Link Checker/2.0',CURLOPT_SSL_VERIFYPEER=>true,CURLOPT_SSL_VERIFYHOST=>2,CURLOPT_PROTOCOLS=>CURLPROTO_HTTP|CURLPROTO_HTTPS));
+  curl_exec($ch); $code=(int)curl_getinfo($ch,CURLINFO_HTTP_CODE); $error=curl_error($ch); curl_close($ch);
+  if($code>=200 && $code<400) return array('problema'=>false,'tipo'=>'URL','estado'=>'HTTP '.$code,'detalle'=>'Enlace responde (no se comprueba contenido PDF)');
+  return array('problema'=>true,'tipo'=>'URL','estado'=>$code?'HTTP '.$code:'Error de conexión','detalle'=>$error?:'El servidor no respondió correctamente.');
  }
  public function carga_config(){
   $datos=array(

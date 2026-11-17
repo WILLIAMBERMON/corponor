@@ -21,5 +21,20 @@ $route['admin/grupos/eliminar/(:num)']='admin/grupo_eliminar/$1';
 $route['resoluciones/archivo/(:any)']='resoluciones/archivo/$1';
 
 $route['admin/enlaces/lote']='admin/enlaces_lote';
+$route['admin/enlaces/iniciar']='admin/enlaces_iniciar';
 
 $route['resoluciones/ver/(:any)']='resoluciones/ver/$1';
+
+// Acuerdos: rutas independientes
+$route['acuerdos']='acuerdos/index';
+$route['acuerdos/ver/(:any)']='acuerdos/ver/$1';
+$route['acuerdos/archivo/(:any)']='acuerdos/archivo/$1';
+$route['acuerdos/descargar/(:any)']='acuerdos/descargar/$1';
+$route['admin/acuerdos']='acuerdos/admin';
+$route['admin/acuerdos/crear']='acuerdos/crear';
+$route['admin/acuerdos/editar/(:num)']='acuerdos/editar/$1';
+$route['admin/grupos-acuerdos']='acuerdos/grupos';
+$route['admin/grupos-acuerdos/crear']='acuerdos/grupo_crear';
+$route['admin/grupos-acuerdos/editar/(:num)']='acuerdos/grupo_editar/$1';
+$route['admin/grupos-acuerdos/eliminar/(:num)']='acuerdos/grupo_eliminar/$1';
+$route['admin/usuarios/permisos-acuerdos/(:num)']='acuerdos/permisos/$1';

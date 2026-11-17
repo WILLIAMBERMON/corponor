@@ -3,7 +3,8 @@
 class Documento_pdf {
  public function abrir($r){
   if($r->archivo){
-   $base=realpath(FCPATH.'uploads/resoluciones'); $ruta=realpath(FCPATH.$r->archivo);
+   $directorio = (strpos((string)$r->archivo, 'uploads/acuerdos/') === 0) ? 'uploads/acuerdos' : 'uploads/resoluciones';
+   $base=realpath(FCPATH.$directorio); $ruta=realpath(FCPATH.$r->archivo);
    if(!$base || !$ruta || strpos($ruta,$base.DIRECTORY_SEPARATOR)!==0 || !is_file($ruta) || !is_readable($ruta)) throw new RuntimeException('Archivo no disponible.');
    $fp=fopen($ruta,'rb');
   } else {

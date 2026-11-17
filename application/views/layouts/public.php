@@ -30,7 +30,7 @@
                 <button class="navbar-toggler ms-auto my-3" type="button" data-bs-toggle="collapse" data-bs-target="#public-wp-navigation" aria-controls="public-wp-navigation" aria-expanded="false" aria-label="Abrir menu"><span class="navbar-toggler-icon"></span></button>
                 <div id="public-wp-navigation" class="collapse navbar-collapse">
                     <ul class="navbar-nav mx-auto public-wp-navigation">
-                        <li class="nav-item"><a class="nav-link active" href="<?= site_url('resoluciones') ?>">Inicio</a></li>
+                        <li class="nav-item"><a class="nav-link" href="<?= site_url('resoluciones') ?>">Resoluciones</a></li><li class="nav-item"><a class="nav-link" href="<?= site_url('acuerdos') ?>">Acuerdos</a></li>
                         <li class="nav-item"><a class="nav-link" href="https://corponor.gov.co/web/index.php/my-account/" target="_blank" rel="noopener">Transparencia y acceso a la informacion</a></li>
                         <li class="nav-item"><a class="nav-link" href="https://corponor.gov.co/web/index.php/descripcion-general/" target="_blank" rel="noopener">Participa</a></li>
                         <li class="nav-item"><a class="nav-link" href="https://corponor.gov.co/web/index.php/informes/" target="_blank" rel="noopener">Concurso publico</a></li>

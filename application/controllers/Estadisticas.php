@@ -1,8 +1,46 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
 class Estadisticas extends MY_Controller {
- public function __construct(){ parent::__construct(); $this->require_login(); $this->load->model(array('Estadistica_model','Grupo_model','Usuario_model')); }
+ public function __construct(){ parent::__construct(); $this->require_login(); $this->load->model(array('Estadistica_model','Grupo_model','Usuario_model','Acuerdo_model','Estadistica_acuerdo_model')); }
  private function contexto(){ $super=$this->Usuario_model->es_superadmin(); return array($super,$super?NULL:array_map(function($g){ return (int)$g->id; },$this->Usuario_model->grupos_asignados($this->session->userdata('usuario_id')))); }
  private function filtros(){ $f=array('desde'=>$this->input->get('desde',TRUE),'hasta'=>$this->input->get('hasta',TRUE),'grupo'=>(int)$this->input->get('grupo',TRUE),'vigencia'=>(int)$this->input->get('vigencia',TRUE)); if($f['vigencia'] && !$f['desde'] && !$f['hasta']){ $f['desde']=$f['vigencia'].'-01-01'; $f['hasta']=$f['vigencia'].'-12-31'; } return $f; }
- public function index(){ list($super,$ids)=$this->contexto(); $f=$this->filtros(); $detalle=(bool)$this->input->get('detalle',TRUE); $incluirCeros=(bool)$this->input->get('ceros',TRUE); $grupos=$this->Grupo_model->todos($this->session->userdata('usuario_id'),$super); $porGrupo=$this->Estadistica_model->por_grupo($f,$ids); $porResolucion=$detalle?$this->Estadistica_model->por_resolucion($f,$ids,NULL,0,$incluirCeros):array(); $totales=$this->Estadistica_model->totales($f,$ids); $this->render('admin/estadisticas',array('title'=>'Estadisticas','f'=>$f,'grupos'=>$grupos,'por_grupo'=>$porGrupo,'por_resolucion'=>$porResolucion,'totales'=>$totales,'detalle'=>$detalle,'incluir_ceros'=>$incluirCeros)); }
- public function exportar(){ list($super,$ids)=$this->contexto(); $f=$this->filtros(); $rows=$this->Estadistica_model->por_resolucion($f,$ids,NULL,0,TRUE); $grupos=$this->Estadistica_model->por_grupo($f,$ids); $totales=$this->Estadistica_model->totales($f,$ids); $filename='informe_resoluciones_'.date('Ymd_His').'.csv'; $this->output->set_content_type('text/csv','utf-8')->set_header('Content-Disposition: attachment; filename="'.$filename.'"'); $fp=fopen('php://output','w'); fputcsv($fp,array('Informe de estadisticas de resoluciones')); fputcsv($fp,array('Desde',$f['desde']?:'Todas','Hasta',$f['hasta']?:'Todas','Grupo',$f['grupo']?:'Todos')); fputcsv($fp,array()); fputcsv($fp,array('TOTALES')); fputcsv($fp,array('Visitas a la pagina publica',(int)$totales['visitas'])); fputcsv($fp,array('Descargas de resoluciones',(int)$totales['descargas'])); fputcsv($fp,array()); fputcsv($fp,array('TOTALES POR GRUPO','Descargas')); foreach($grupos as $g) fputcsv($fp,array($g->descripcion,(int)$g->descargas)); fputcsv($fp,array()); fputcsv($fp,array('DETALLE POR RESOLUCION','Fecha resolucion','Grupo','Descargas')); foreach($rows as $r) fputcsv($fp,array($r->titulo,$r->fecha_resolucion,$r->grupo_descripcion,(int)$r->descargas)); fclose($fp); }
+ private function modulo(){return $this->input->get('modulo',TRUE)==='acuerdos'?'acuerdos':'resoluciones';}
+ private function contexto_acuerdos(){
+  if($this->Usuario_model->es_superadmin())return NULL;
+  return array_map(function($g){return (int)$g->id;},$this->Acuerdo_model->grupos());
+ }
+ public function index(){
+  $modulo=$this->modulo();$f=$this->filtros();$detalle=(bool)$this->input->get('detalle',TRUE);$incluirCeros=(bool)$this->input->get('ceros',TRUE);
+  if($modulo==='acuerdos'){
+   $ids=$this->contexto_acuerdos();$grupos=$this->Acuerdo_model->grupos();
+   $porGrupo=$this->Estadistica_acuerdo_model->por_grupo($f,$ids);
+   $porDocumento=$detalle?$this->Estadistica_acuerdo_model->por_acuerdo($f,$ids,$incluirCeros):array();
+   $totales=$this->Estadistica_acuerdo_model->totales($f,$ids);
+  }else{
+   list($super,$ids)=$this->contexto();$grupos=$this->Grupo_model->todos($this->session->userdata('usuario_id'),$super);
+   $porGrupo=$this->Estadistica_model->por_grupo($f,$ids);
+   $porDocumento=$detalle?$this->Estadistica_model->por_resolucion($f,$ids,NULL,0,$incluirCeros):array();
+   $totales=$this->Estadistica_model->totales($f,$ids);
+  }
+  $this->render('admin/estadisticas',array('title'=>'Estadísticas','modulo'=>$modulo,'f'=>$f,'grupos'=>$grupos,'por_grupo'=>$porGrupo,'por_documento'=>$porDocumento,'totales'=>$totales,'detalle'=>$detalle,'incluir_ceros'=>$incluirCeros));
+ }
+ public function exportar(){
+  if($this->modulo()==='acuerdos'){
+   $f=$this->filtros();$ids=$this->contexto_acuerdos();
+   $rows=$this->Estadistica_acuerdo_model->por_acuerdo($f,$ids,TRUE);
+   $grupos=$this->Estadistica_acuerdo_model->por_grupo($f,$ids);
+   $totales=$this->Estadistica_acuerdo_model->totales($f,$ids);
+   $this->output->set_content_type('text/csv','utf-8')->set_header('Content-Disposition: attachment; filename="informe_acuerdos_'.date('Ymd_His').'.csv"');
+   $fp=fopen('php://output','w');fwrite($fp,"\xEF\xBB\xBF");
+   fputcsv($fp,array('Estadísticas de acuerdos'));
+   fputcsv($fp,array('Desde',$f['desde']?:'Todas','Hasta',$f['hasta']?:'Todas','Grupo',$f['grupo']?:'Todos'));
+   fputcsv($fp,array('Visitas a la página pública',$totales['visitas']));
+   fputcsv($fp,array('Visualizaciones de PDF',$totales['visualizaciones']));
+   fputcsv($fp,array('Descargas de PDF',$totales['descargas']));
+   fputcsv($fp,array());fputcsv($fp,array('GRUPOS','Visualizaciones','Descargas'));
+   foreach($grupos as $g)fputcsv($fp,array($g->descripcion,$g->visualizaciones,$g->descargas));
+   fputcsv($fp,array());fputcsv($fp,array('ACUERDO','Fecha','Grupo','Visualizaciones','Descargas'));
+   foreach($rows as $r)fputcsv($fp,array($r->titulo,$r->fecha_acuerdo,$r->grupo_descripcion,$r->visualizaciones,$r->descargas));
+   fclose($fp);return;
+  }
+ list($super,$ids)=$this->contexto(); $f=$this->filtros(); $rows=$this->Estadistica_model->por_resolucion($f,$ids,NULL,0,TRUE); $grupos=$this->Estadistica_model->por_grupo($f,$ids); $totales=$this->Estadistica_model->totales($f,$ids); $filename='informe_resoluciones_'.date('Ymd_His').'.csv'; $this->output->set_content_type('text/csv','utf-8')->set_header('Content-Disposition: attachment; filename="'.$filename.'"'); $fp=fopen('php://output','w'); fputcsv($fp,array('Informe de estadisticas de resoluciones')); fputcsv($fp,array('Desde',$f['desde']?:'Todas','Hasta',$f['hasta']?:'Todas','Grupo',$f['grupo']?:'Todos')); fputcsv($fp,array()); fputcsv($fp,array('TOTALES')); fputcsv($fp,array('Visitas a la pagina publica',(int)$totales['visitas'])); fputcsv($fp,array('Descargas de resoluciones',(int)$totales['descargas'])); fputcsv($fp,array()); fputcsv($fp,array('TOTALES POR GRUPO','Descargas')); foreach($grupos as $g) fputcsv($fp,array($g->descripcion,(int)$g->descargas)); fputcsv($fp,array()); fputcsv($fp,array('DETALLE POR RESOLUCION','Fecha resolucion','Grupo','Descargas')); foreach($rows as $r) fputcsv($fp,array($r->titulo,$r->fecha_resolucion,$r->grupo_descripcion,(int)$r->descargas)); fclose($fp); }
 }
